@@ -1,0 +1,265 @@
+<style>
+body{font-family:sans-serif;background:#111;color:#fff;text-align:center;padding:12px;padding-top:44px}
+button{font-size:15px;padding:8px 12px;margin:3px;border:none;border-radius:9px;background:#555;color:#fff}
+.s{background:#ff9800}
+#ol{background:#222;border-radius:9px;padding:10px;margin:8px 0}
+#gn{text-align:left;font-size:13px;color:#bbb;max-height:200px;overflow:auto}
+div{white-space:pre-line}
+#mb{position:fixed;top:6px;right:6px;background:#2196f3;z-index:9}
+#mn{display:none;position:fixed;top:50px;left:6px;right:6px;background:#222;border:1px solid #444;border-radius:10px;padding:8px;z-index:9;max-height:70%;overflow:auto}
+#mn button{display:block;width:96%;text-align:left}
+</style>
+<button id="mb" onclick="mnA()">☰ Menü</button>
+<div id="mn"></div>
+<h2>Hayat Oyunu</h2>
+<div id="ek">8 milyar insandan biri olacaksın.</div>
+<div id="bi" style="font-size:14px;color:#ccc"></div>
+<div id="du"></div>
+<div id="ol"></div>
+<div id="ko"></div>
+<div id="ho"></div>
+<div id="gn"></div>
+<script>
+// ad, nüfus, ömür, yoksulluk%, şehirler, dinler, para birimi, 1 dolar kaç birim, asgari ücret $/ay, ortalama maaş $/ay (2026)
+var U=[["Hindistan",1450,72,55,"Mumbai,Delhi,Kalküta","Hinduizm:79,İslam:15,Hristiyanlık:3,Dinsiz:3","rupi",90,49,336],
+["Çin",1410,78,35,"Şanghay,Pekin,Guangzhou","Dinsiz:70,Budizm:18,Halk inancı:7,Hristiyanlık:5","yuan",7.2,602,1556],
+["Amerika",345,79,20,"New York,Los Angeles,Chicago","Hristiyanlık:63,Dinsiz:29,Diğer:8","dolar",1,1160,6228],
+["Endonezya",280,72,50,"Cakarta,Surabaya,Bandung","İslam:87,Hristiyanlık:10,Diğer:3","rupiah",16000,193,300],
+["Pakistan",250,67,65,"Karaçi,Lahor,İslamabad","İslam:96,Diğer:4","rupi",280,92,140],
+["Nijerya",230,55,75,"Lagos,Kano,Abuja","İslam:50,Hristiyanlık:47,Diğer:3","naira",1500,42,220],
+["Brezilya",212,75,45,"São Paulo,Rio,Salvador","Hristiyanlık:87,Dinsiz:10,Diğer:3","real",5.6,217,588],
+["Bangladeş",175,74,60,"Dakka,Chittagong,Khulna","İslam:91,Hinduizm:8,Diğer:1","taka",122,104,149],
+["Rusya",144,73,35,"Moskova,St. Petersburg,Kazan","Hristiyanlık:70,Dinsiz:15,İslam:13,Diğer:2","ruble",80,258,1034],
+["Etiyopya",130,67,75,"Addis Ababa,Dire Dawa,Mekele","Hristiyanlık:67,İslam:31,Diğer:2","birr",140,43,60],
+["Meksika",130,75,45,"Mexico City,Guadalajara,Monterrey","Hristiyanlık:88,Dinsiz:10,Diğer:2","peso",18.5,512,881],
+["Japonya",123,85,15,"Tokyo,Osaka,Nagoya","Şinto/Budizm:60,Dinsiz:38,Diğer:2","yen",150,1136,2523],
+["Mısır",115,72,55,"Kahire,İskenderiye,Giza","İslam:90,Hristiyanlık:10","pound",50,92,135],
+["Türkiye",87,77,35,"İstanbul,Ankara,İzmir","İslam:95,Dinsiz:4,Diğer:1","lira",45,528,750],
+["Almanya",84,81,15,"Berlin,Hamburg,Münih","Hristiyanlık:50,Dinsiz:43,İslam:6,Diğer:1","euro",0.86,2494,5366],
+["İngiltere",69,81,18,"Londra,Manchester,Birmingham","Hristiyanlık:46,Dinsiz:40,İslam:7,Diğer:7","sterlin",0.75,2729,4365],
+["Fransa",66,83,16,"Paris,Marsilya,Lyon","Hristiyanlık:48,Dinsiz:42,İslam:9,Diğer:1","euro",0.86,2157,3926],
+["Güney Kore",52,84,16,"Seul,Busan,Incheon","Dinsiz:51,Hristiyanlık:31,Budizm:18","won",1400,1230,2949],
+["Kanada",41,82,15,"Toronto,Montreal,Vancouver","Hristiyanlık:53,Dinsiz:35,Diğer:12","dolar",1.4,2072,4085],
+["Çekya",11,79,15,"Prag,Brno,Ostrava","Dinsiz:75,Hristiyanlık:23,Diğer:2","kron",21,990,2050]];
+var TL=45;
+var IS={y:"tarım işçisi,inşaat işçisi,seyyar satıcı,temizlikçi,garson".split(","),o:"öğretmen,memur,şoför,esnaf,hemşire,teknisyen".split(","),z:"doktor,avukat,mühendis,iş insanı,yazılımcı".split(",")};
+var HB={Spor:{sa:3,mu:1},Müzik:{mu:3},Kitap:{ze:3},Arkadaşlar:{mu:2,ar:4},"Ek iş":{mu:-2,sa:-1}};
+var YIL=40,k,hz=1,du=false,ge=0,bk=0,ma=0,q=[],tm;
+function $(i){return document.getElementById(i)}
+function r(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function sc(a){return a[r(0,a.length-1)]}
+function c(x){return Math.max(0,Math.min(100,x))}
+function ulke(){for(var i=0;i<U.length;i++)if(U[i][0]==k.u)return U[i]}
+function AS(){return ulke()[8]*12}
+function OR(){return ulke()[9]*12}
+function maas(t){return t=="y"?AS():(t=="o"?OR():OR()*2.2)}
+function gelir(){if(!k.me)return 0;var g=maas(k.mt);return k.me=="emekli"?g*0.5:g}
+function masraf(){if(k.yas<18)return 0;var m=AS()*0.7*(1+0.3*k.co);if(k.yas<23&&(anneV()||babaV()))m*=0.4;return m}
+function et(e){for(var a in e)k[a]=c(k[a]+e[a])}
+function ag(l){var t=0;l.forEach(function(x){t+=x[1]});var z=Math.random()*t;for(var i=0;i<l.length;i++){z-=l[i][1];if(z<0)return l[i]}return l[0]}
+function yz(t){k.g.unshift("Yaş "+k.yas+": "+t);$("gn").innerText=k.g.join("\n")}
+function kd(){localStorage.setItem("hy5",JSON.stringify([k,hz,ge]))}
+function para(x){var u=ulke();return Math.round(x*u[7]).toLocaleString("tr")+" "+u[6]+" (≈ "+Math.round(x*TL).toLocaleString("tr")+" TL)"}
+function tn(x){return x<20?"Çok kötü":x<40?"Zayıf":x<60?"Orta":x<80?"İyi":"Çok iyi"}
+function anneV(){return k.ay+k.yas<k.ao}
+function babaV(){return k.by+k.yas<k.bo}
+function bt(l){var d=$("ko");d.innerHTML="";l.forEach(function(b){var e=document.createElement("button");e.innerText=b[0];e.onclick=b[1];if(b[2])e.className="s";d.appendChild(e)})}
+function soru(t,l){bk=1;var d=$("ol");d.innerText=t+"\n";
+l.forEach(function(s){var b=document.createElement("button");b.innerText=s[0];
+b.onclick=function(){bk=0;d.innerText=t+"\n→ "+s[0];yz(t.split("\n")[0]+" → "+s[0]);s[1]();ci();ok();kd()};d.appendChild(b)})}
+function ode(t,cost,bas,vaz,vl){var o=[];
+if(k.pa>=cost)o.push(["Birikiminden öde",function(){k.pa-=cost;bas()}]);
+if(k.yas>=18)o.push(["Bankadan faizli kredi çek (yıllık %30)",function(){k.kr+=cost;yz("Kredi çektin: "+para(cost));bas()}]);
+if(!k.ai&&(anneV()||babaV()))o.push(["Ailenden borç iste",function(){k.ai=1;
+ if(Math.random()<{y:.3,o:.6,z:.9}[k.s]){k.ab+=cost;yz("Ailen sana borç verdi.");bas()}
+ else soru("Ailenin buna gücü yetmedi.",[["Tamam",vaz]])}]);
+o.push([vl||"Vazgeç",vaz]);
+soru(t+"\nMaliyet: "+para(cost),o)}
+</script>
+<style>
+body{font-family:sans-serif;background:#111;color:#fff;text-align:center;padding:12px;padding-top:44px}
+button{font-size:15px;padding:8px 12px;margin:3px;border:none;border-radius:9px;background:#555;color:#fff}
+.s{background:#ff9800}
+#ol{background:#222;border-radius:9px;padding:10px;margin:8px 0}
+#gn{text-align:left;font-size:13px;color:#bbb;max-height:200px;overflow:auto}
+div{white-space:pre-line}
+#mb{position:fixed;top:6px;right:6px;background:#2196f3;z-index:9}
+#mn{display:none;position:fixed;top:50px;left:6px;right:6px;background:#222;border:1px solid #444;border-radius:10px;padding:8px;z-index:9;max-height:70%;overflow:auto}
+#mn button{display:block;width:96%;text-align:left}
+</style>
+<button id="mb" onclick="mnA()">☰ Menü</button>
+<div id="mn"></div>
+<h2>Hayat Oyunu</h2>
+<div id="ek">8 milyar insandan biri olacaksın.</div>
+<div id="bi" style="font-size:14px;color:#ccc"></div>
+<div id="du"></div>
+<div id="ol"></div>
+<div id="ko"></div>
+<div id="ho"></div>
+<div id="gn"></div>
+<script>
+// ad, nüfus, ömür, yoksulluk%, şehirler, dinler, para birimi, 1 dolar kaç birim, asgari ücret $/ay, ortalama maaş $/ay (2026)
+var U=[["Hindistan",1450,72,55,"Mumbai,Delhi,Kalküta","Hinduizm:79,İslam:15,Hristiyanlık:3,Dinsiz:3","rupi",90,49,336],
+["Çin",1410,78,35,"Şanghay,Pekin,Guangzhou","Dinsiz:70,Budizm:18,Halk inancı:7,Hristiyanlık:5","yuan",7.2,602,1556],
+["Amerika",345,79,20,"New York,Los Angeles,Chicago","Hristiyanlık:63,Dinsiz:29,Diğer:8","dolar",1,1160,6228],
+["Endonezya",280,72,50,"Cakarta,Surabaya,Bandung","İslam:87,Hristiyanlık:10,Diğer:3","rupiah",16000,193,300],
+["Pakistan",250,67,65,"Karaçi,Lahor,İslamabad","İslam:96,Diğer:4","rupi",280,92,140],
+["Nijerya",230,55,75,"Lagos,Kano,Abuja","İslam:50,Hristiyanlık:47,Diğer:3","naira",1500,42,220],
+["Brezilya",212,75,45,"São Paulo,Rio,Salvador","Hristiyanlık:87,Dinsiz:10,Diğer:3","real",5.6,217,588],
+["Bangladeş",175,74,60,"Dakka,Chittagong,Khulna","İslam:91,Hinduizm:8,Diğer:1","taka",122,104,149],
+["Rusya",144,73,35,"Moskova,St. Petersburg,Kazan","Hristiyanlık:70,Dinsiz:15,İslam:13,Diğer:2","ruble",80,258,1034],
+["Etiyopya",130,67,75,"Addis Ababa,Dire Dawa,Mekele","Hristiyanlık:67,İslam:31,Diğer:2","birr",140,43,60],
+["Meksika",130,75,45,"Mexico City,Guadalajara,Monterrey","Hristiyanlık:88,Dinsiz:10,Diğer:2","peso",18.5,512,881],
+["Japonya",123,85,15,"Tokyo,Osaka,Nagoya","Şinto/Budizm:60,Dinsiz:38,Diğer:2","yen",150,1136,2523],
+["Mısır",115,72,55,"Kahire,İskenderiye,Giza","İslam:90,Hristiyanlık:10","pound",50,92,135],
+["Türkiye",87,77,35,"İstanbul,Ankara,İzmir","İslam:95,Dinsiz:4,Diğer:1","lira",45,528,750],
+["Almanya",84,81,15,"Berlin,Hamburg,Münih","Hristiyanlık:50,Dinsiz:43,İslam:6,Diğer:1","euro",0.86,2494,5366],
+["İngiltere",69,81,18,"Londra,Manchester,Birmingham","Hristiyanlık:46,Dinsiz:40,İslam:7,Diğer:7","sterlin",0.75,2729,4365],
+["Fransa",66,83,16,"Paris,Marsilya,Lyon","Hristiyanlık:48,Dinsiz:42,İslam:9,Diğer:1","euro",0.86,2157,3926],
+["Güney Kore",52,84,16,"Seul,Busan,Incheon","Dinsiz:51,Hristiyanlık:31,Budizm:18","won",1400,1230,2949],
+["Kanada",41,82,15,"Toronto,Montreal,Vancouver","Hristiyanlık:53,Dinsiz:35,Diğer:12","dolar",1.4,2072,4085],
+["Çekya",11,79,15,"Prag,Brno,Ostrava","Dinsiz:75,Hristiyanlık:23,Diğer:2","kron",21,990,2050]];
+var TL=45;
+var IS={y:"tarım işçisi,inşaat işçisi,seyyar satıcı,temizlikçi,garson".split(","),o:"öğretmen,memur,şoför,esnaf,hemşire,teknisyen".split(","),z:"doktor,avukat,mühendis,iş insanı,yazılımcı".split(",")};
+var HB={Spor:{sa:3,mu:1},Müzik:{mu:3},Kitap:{ze:3},Arkadaşlar:{mu:2,ar:4},"Ek iş":{mu:-2,sa:-1}};
+var YIL=40,k,hz=1,du=false,ge=0,bk=0,ma=0,q=[],tm;
+function $(i){return document.getElementById(i)}
+function r(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function sc(a){return a[r(0,a.length-1)]}
+function c(x){return Math.max(0,Math.min(100,x))}
+function ulke(){for(var i=0;i<U.length;i++)if(U[i][0]==k.u)return U[i]}
+function AS(){return ulke()[8]*12}
+function OR(){return ulke()[9]*12}
+function maas(t){return t=="y"?AS():(t=="o"?OR():OR()*2.2)}
+function gelir(){if(!k.me)return 0;var g=maas(k.mt);return k.me=="emekli"?g*0.5:g}
+function masraf(){if(k.yas<18)return 0;var m=AS()*0.7*(1+0.3*k.co);if(k.yas<23&&(anneV()||babaV()))m*=0.4;return m}
+function et(e){for(var a in e)k[a]=c(k[a]+e[a])}
+function ag(l){var t=0;l.forEach(function(x){t+=x[1]});var z=Math.random()*t;for(var i=0;i<l.length;i++){z-=l[i][1];if(z<0)return l[i]}return l[0]}
+function yz(t){k.g.unshift("Yaş "+k.yas+": "+t);$("gn").innerText=k.g.join("\n")}
+function kd(){localStorage.setItem("hy5",JSON.stringify([k,hz,ge]))}
+function para(x){var u=ulke();return Math.round(x*u[7]).toLocaleString("tr")+" "+u[6]+" (≈ "+Math.round(x*TL).toLocaleString("tr")+" TL)"}
+function tn(x){return x<20?"Çok kötü":x<40?"Zayıf":x<60?"Orta":x<80?"İyi":"Çok iyi"}
+function anneV(){return k.ay+k.yas<k.ao}
+function babaV(){return k.by+k.yas<k.bo}
+function bt(l){var d=$("ko");d.innerHTML="";l.forEach(function(b){var e=document.createElement("button");e.innerText=b[0];e.onclick=b[1];if(b[2])e.className="s";d.appendChild(e)})}
+function soru(t,l){bk=1;var d=$("ol");d.innerText=t+"\n";
+l.forEach(function(s){var b=document.createElement("button");b.innerText=s[0];
+b.onclick=function(){bk=0;d.innerText=t+"\n→ "+s[0];yz(t.split("\n")[0]+" → "+s[0]);s[1]();ci();ok();kd()};d.appendChild(b)})}
+function ode(t,cost,bas,vaz,vl){var o=[];
+if(k.pa>=cost)o.push(["Birikiminden öde",function(){k.pa-=cost;bas()}]);
+if(k.yas>=18)o.push(["Bankadan faizli kredi çek (yıllık %30)",function(){k.kr+=cost;yz("Kredi çektin: "+para(cost));bas()}]);
+if(!k.ai&&(anneV()||babaV()))o.push(["Ailenden borç iste",function(){k.ai=1;
+ if(Math.random()<{y:.3,o:.6,z:.9}[k.s]){k.ab+=cost;yz("Ailen sana borç verdi.");bas()}
+ else soru("Ailenin buna gücü yetmedi.",[["Tamam",vaz]])}]);
+o.push([vl||"Vazgeç",vaz]);
+soru(t+"\nMaliyet: "+para(cost),o)}
+</script>
+<script>
+function isTeklif(){var t=k.ed>=2?["z","o"]:(k.ed==1?["o","y"]:["y"]);var l=[];
+for(var i=0;i<3;i++){(function(tt){var m=sc(IS[tt]);l.push([m+" ("+para(maas(tt)/12)+"/ay)",function(){k.me=m;k.mt=tt;yz(m+" olarak işe başladın.")}])})(sc(t))}
+l.push(["Şimdilik çalışma",function(){}]);soru("İş teklifleri geldi. Hangisini seçersin?",l)}
+function sinav(){if(Math.random()*100<k.ze-(k.s=="y"?15:0))soru("Üniversiteyi kazandın! Yıllık masraf: "+para(AS()*0.15),[["Üniversiteye başla",function(){k.ok=2;k.un=k.yas;et({mu:8})}],["Gitme, çalış",isTeklif]]);
+else soru("Üniversite sınavını kazanamadın.",[["Seneye tekrar dene",function(){k.tk=k.yas+1}],["Çalışmaya başla",isTeklif]])}
+function ask(){var yer=k.me&&k.me!="emekli"?"İş yerinde":(k.ok?"Okulda":"Mahallende");
+soru(yer+" biri dikkatini çekiyor. Ne yaparsın?",[["Yanına gidip konuş",function(){
+ if(Math.random()<.6)soru("Sohbetiniz çok güzel geçti, ondan hoşlanıyorsun.",[["Duygularını açıkla",function(){
+  if(Math.random()<.45+(k.mu-50)/200){k.sv=1;yz("O da senden hoşlanıyormuş, sevgili oldunuz!");et({mu:10})}else{yz("Seni sadece arkadaş olarak görüyormuş.");et({mu:-8})}}],
+  ["Arkadaş olarak kal",function(){et({ar:5})}]]);
+ else{yz("Konuştunuz ama pek anlaşamadınız.");et({mu:-2})}}],["Uzaktan bak, konuşma",function(){et({mu:-2})}]])}
+function cl(){return k.me&&k.me!="emekli"}
+var E=[
+[1,6,0,function(){yz("Ateşin günlerce düşmedi, ailen seni doktora götürdü.");et({sa:-6})}],
+[6,13,function(){return k.ok},function(){soru("Okulda büyük bir çocuk harçlığını alıyor. Ne yaparsın?",[["Öğretmene anlat",function(){et({mu:-2})}],["Sessiz kal",function(){et({mu:-10})}],["Karşılık ver",function(){et({sa:-5,mu:3})}]])}],
+[7,17,function(){return k.ok},function(){soru("Sınav haftası geldi. Ne yaparsın?",[["Çok çalış",function(){et({ze:5,mu:-2})}],["Arkadaşlarla takıl",function(){et({ar:5,ze:-3})}],["Dengeli git",function(){et({ze:2,ar:2})}]])}],
+[10,17,function(){return !k.gr},function(){soru("Okulda iki grup var: biri sakin ve derslere önem veriyor, diğeri eğlenceli ama başı beladan kurtulmuyor.",[["Sakin gruba katıl",function(){k.gr="s";et({ar:4})}],["Eğlenceli gruba katıl",function(){k.gr="e";et({ar:6,mu:3})}],["Kimseye katılma",function(){k.gr="y";et({ar:-5})}]])}],
+[11,18,function(){return k.gr=="e"},function(){soru("Grubun yarın okulu kırıp çarşıya gitmek istiyor. Sen de gelecek misin?",[["Gel",function(){k.ek++;et({ar:4,ze:-4,mu:3})}],["Gelme",function(){et({ar:-5})}]])}],
+[11,18,function(){return k.gr=="e"&&k.ek>=2},function(){k.ek=0;soru("Okul, devamsızlığını ailene bildirdi. Ailen çok kızgın.",[["Özür dile, söz ver",function(){et({mu:-4,ze:2})}],["Umursama",function(){et({mu:-2,ze:-5});k.ai=1;yz("Ailenle aran bozuldu.")}]])}],
+[13,18,function(){return k.gr=="e"},function(){soru("Grup bir gece partisine çağırıyor, içki de olacakmış.",[["Git",function(){et({mu:5,sa:-3,ar:4});k.risk+=1}],["Gitme",function(){et({ar:-4})}]])}],
+[13,18,function(){return k.gr=="e"},function(){soru("Gruptan bir arkadaşın kavgaya karıştı ve senden yardım istiyor.",[["Yardıma koş",function(){if(Math.random()<.5){yz("Kavgada yaralandın.");et({sa:-10,ar:6})}else{yz("Kavgayı ayırdın, herkes sana minnettar.");et({ar:8})}}],["Uzak dur",function(){et({ar:-8})}]])}],
+[11,18,function(){return k.gr=="s"},function(){soru("Arkadaşların bilim yarışmasına katılmayı öneriyor.",[["Katıl",function(){et({ze:4});if(Math.random()<.35){yz("Yarışmayı kazandınız!");et({mu:10})}else yz("Yarışmada derece alamadınız ama çok şey öğrendin.")}],["Katılma",function(){}]])}],
+[11,18,function(){return k.gr=="s"},function(){yz("Grubunla birlikte ders çalıştınız, notların yükseldi.");et({ze:4,ar:2})}],
+[12,17,function(){return !k.sg},function(){soru("Arkadaşların sigara yakıyor. Biri paketi uzatıp 'Bir tane al, korkak olma' diyor.",[["Hayır de ve yürü",function(){et({ar:-4});k.sg=-1}],["Bir tane dene",function(){et({ar:3});k.risk+=1;if(Math.random()<.4){k.sg=1;yz("Sigaraya alıştın.")}}],["Onlarla içmeye başla",function(){et({ar:6});k.sg=1;k.risk+=2}]])}],
+[13,25,function(){return k.sg==1&&!k.so},function(){k.so=1;soru("Ailen sigara içtiğini öğrendi.",[["Doğruyu söyle",function(){et({mu:-3})}],["İnkar et",function(){et({mu:-6})}]])}],
+[18,80,function(){return k.sg==1},function(){soru("Sigara her yıl hem sağlığını hem cebini yakıyor. Bırakmayı denemek ister misin?",[["Bırakmayı dene",function(){if(Math.random()<.4){k.sg=-1;yz("Sigarayı bıraktın!");et({mu:6})}else{yz("Bırakamadın, yeniden başladın.");et({mu:-4})}}],["Devam et",function(){k.risk+=1}]])}],
+[14,45,function(){return !k.sv&&!k.es},ask],
+[14,17,function(){return k.sv},function(){k.sv=0;yz("Sevgilinle ayrıldınız, kalbin kırık.");et({mu:-10})}],
+[18,45,function(){return k.sv&&!k.es},function(){soru("Sevgilinle uzun zamandır birliktesiniz.",[["Evlilik teklif et",function(){ode("Düğün masrafı gerekiyor.",OR()*0.5,function(){k.es=1;k.sv=0;yz("Evlendin!");et({mu:12})},function(){yz("Düğünü erteledin.")},"Ertele")}],["Biraz daha bekle",function(){}],["Ayrıl",function(){k.sv=0;et({mu:-8})}]])}],
+[22,45,function(){return k.es},function(){soru("Eşinle çocuk sahibi olmayı konuşuyorsunuz. Bir çocuğun yıllık masrafı yaklaşık "+para(AS()*0.2),[["Çocuk sahibi olalım",function(){k.co++;yz("Bir çocuğun oldu!");et({mu:12})}],["Şimdilik değil",function(){}]])}],
+[20,90,function(){return k.es},function(){yz("Eşinle büyük bir tartışma yaşadınız.");et({mu:-6})}],
+[16,25,0,function(){soru("Bir tanıdığın kolay para yolu öneriyor ama iş yasa dışı.",[["Reddet",function(){}],["Kabul et",function(){k.pa+=OR()*0.3;et({mu:-5});if(Math.random()<.35){yz("Yakalandın, büyük ceza ödedin.");k.pa-=OR()*0.6}}]])}],
+[20,64,cl,function(){yz("Şirket küçüldü, işten çıkarıldın.");k.me="";et({mu:-10})}],
+[25,64,cl,function(){soru("Patronun daha yüksek ama yorucu bir pozisyon teklif ediyor.",[["Kabul et",function(){k.mt=k.mt=="y"?"o":"z";yz("Terfi aldın, maaşın arttı.");et({sa:-3})}],["Reddet",function(){}]])}],
+[18,90,0,function(){ode("Doktor ciddi bir sorun buldu, tedavi gerekiyor.",OR()*0.25,function(){et({sa:8});yz("Tedavi oldun.")},function(){et({sa:-15});yz("Tedavi olmadın, sağlığın kötüleşti.")},"Tedavi olma")}],
+[45,99,0,function(){yz("Bel ve eklem ağrıların arttı.");et({sa:-5})}],
+[0,99,0,function(){yz("Ülkende ekonomik kriz çıktı, fiyatlar arttı.");k.pa*=0.85;et({mu:-5})}],
+[0,99,function(){return Math.random()<.3},function(){yz("Bölgende deprem oldu, evin hasar gördü.");k.pa*=0.8;et({sa:-6,mu:-10})}],
+[0,99,function(){return Math.random()<.15},function(){yz("Ülkende çatışmalar başladı.");k.pa*=0.75;et({sa:-8,mu:-15})}],
+[0,99,function(){return Math.random()<.3},function(){yz("Salgın hastalık yayıldı.");et({sa:-7})}],
+[5,99,0,function(){yz("Yeni bir arkadaş edindin.");et({ar:10,mu:4})}],
+[5,99,0,function(){yz("Yakın arkadaşınla küstün.");et({ar:-10,mu:-5})}]];
+function dog(){var u=ag(U),n=0;q=[];bk=0;["bi","du","ol","gn","ho","ko"].forEach(function(x){$(x).innerText=""});
+(function d(){n++;if(n<30){$("ek").innerText=sc(U)[0];setTimeout(d,50+n*n*.4)}else ol(u)})()}
+function ol(u){var z=Math.random()*100,s=z<u[3]?"y":(z<100-u[3]/4?"o":"z"),b={y:45,o:60,z:75}[s],kr=Math.random()<(s=="y"?.5:.2);
+var dn=u[5].split(",").map(function(x){x=x.split(":");return[x[0],+x[1]]});
+k={u:u[0],o:u[2],s:s,yer:kr?"kırsal bir köy":sc(u[4].split(",")),din:ag(dn)[0],cn:Math.random()<.51?"Erkek":"Kız",
+an:sc(IS[s]),ba:sc(IS[s]),ev:Math.random()<{y:.3,o:.6,z:.95}[s]?"Kendi evleri":"Kirada",kar:r(0,u[3]>50?5:2),
+ay:r(18,38),yas:0,sa:c(b+r(-20,15)),ze:c(60+r(-30,20)),mu:c(55+r(-30,20)),ar:30,pa:0,kr:0,ab:0,yt:0,
+sv:0,es:0,co:0,ok:0,ed:0,me:"",mt:"",hb:"",bu:0,tk:0,un:0,risk:0,ai:0,vk:0,gr:"",ek:0,sg:0,so:0,g:[],olu:0};
+k.by=k.ay+r(0,8);k.ao=k.ay+u[2]+r(-15,8);k.bo=k.by+u[2]-4+r(-15,8);k.ol=u[2]+Math.round((k.sa-50)/4)+r(-15,8);if(k.ol<20)k.ol=r(20,40);
+ge=0;yz(k.cn=="Erkek"?"Erkek bebek olarak doğdun.":"Kız bebek olarak doğdun.");
+yz("Bu ülkede asgari ücret ayda "+para(u[8])+", ortalama maaş "+para(u[9])+".");kd();bas()}
+function ci(){$("ek").innerText=k.u+", "+k.yer;
+$("bi").innerText=k.cn+" • "+k.din+" • "+{y:"Yoksul",o:"Orta halli",z:"Zengin"}[k.s]+" aile\nAnne: "+k.an+(anneV()?"":" (vefat)")+" • Baba: "+k.ba+(babaV()?"":" (vefat)")+"\n"+k.ev+" • Kardeş: "+k.kar+(k.me?"\nMeslek: "+k.me:"")+(k.sv?" • Sevgilin var":"")+(k.es?" • Evli":"")+(k.co?" • Çocuk: "+k.co:"");
+$("du").innerText="Yaş "+k.yas+" ("+Math.round(ge/YIL*100)+"%)\nSağlık: "+tn(k.sa)+" • Zeka: "+tn(k.ze)+"\nMutluluk: "+tn(k.mu)+" • Arkadaşlık: "+tn(k.ar)+"\nBirikim: "+para(k.pa)+(gelir()?"\nAylık maaş: "+para(gelir()/12):"")+(masraf()?"\nAylık yaşam masrafı: "+para(masraf()/12):"")+(k.yt>0?"\nYatırım: "+para(k.yt):"")+(k.kr>0?"\nKredi borcu: "+para(k.kr):"")+(k.ab>0?"\nAile borcu: "+para(k.ab):"")}
+function hzb(){var l=[[du?"▶ Devam":"⏸ Durdur",function(){du=!du;hzb()},du]];[1,2,3,4,10].forEach(function(h){l.push([h+"x",function(){hz=h;hzb()},hz==h])});bt(l)}
+function hob(){var d=$("ho");d.innerHTML="";if(k.yas<6)return;d.innerText="Hobi: ";
+Object.keys(HB).forEach(function(h){if(h=="Ek iş"&&k.yas<15)return;var e=document.createElement("button");e.innerText=h;if(k.hb==h)e.className="s";e.onclick=function(){k.hb=k.hb==h?"":h;hob()};d.appendChild(e)})}
+function yil(){k.yas++;ge=0;k.ai=0;k.vk=0;
+var g=gelir();if(k.bu==1&&k.ok)g+=AS()*0.15;
+k.pa+=g-masraf();if(k.ok==2&&k.bu!=1)k.pa-=AS()*0.15;
+if(k.sg==1&&k.yas>=15){k.pa-=AS()*0.05;k.risk+=0.5}
+if(k.hb){et(HB[k.hb]);if(k.hb=="Ek iş")k.pa+=AS()*0.15}
+if(k.kr>0)k.kr*=1.3;if(k.yt>0)k.yt*=1+Math.random()*0.35-0.15;
+if(k.pa<0&&k.yas>=18){k.kr-=k.pa;k.pa=0;yz("Paran yetmedi, bankaya borçlandın.")}else if(k.pa<0)k.pa=0;
+if(k.kr>OR())et({mu:-5});if(k.yas>50)et({sa:-r(1,3)});
+if(k.risk>0&&k.yas>=30&&Math.random()<k.risk*.02){k.risk=0;k.ol-=5;yz("Gençlikteki kötü alışkanlıkların yüzünden akciğerinde ciddi bir hastalık çıktı.");q.push(function(){ode("Akciğer tedavisi gerekiyor.",OR()*0.5,function(){et({sa:5})},function(){et({sa:-20});k.ol-=5},"Tedavi olma")})}
+if(k.yas==6)q.push(function(){if(k.yer=="kırsal bir köy"&&k.s=="y"&&Math.random()<.4){yz("Köyünde okul yok, okula gidemedin.");return}soru("6 yaşına geldin, okul zamanı.",[["Okula başla",function(){k.ok=1}],["Evde kal, ailene yardım et",function(){et({ze:-5})}]])});
+if(k.yas==14&&k.ok==1)q.push(function(){soru("Ortaokulu bitirdin. Ne yapmak istersin?",[["Liseye devam et",function(){}],["Okulu bırak, çalış",function(){k.ok=0;isTeklif()}]])});
+if(k.yas==18&&k.ok==1)q.push(function(){k.ed=1;k.ok=0;soru("Liseyi bitirdin!",[["Üniversite sınavına gir",sinav],["Çalışma hayatına atıl",isTeklif]])});
+if(k.tk&&k.tk==k.yas)q.push(function(){k.tk=0;sinav()});
+if(k.ok==2&&k.yas==k.un+4)q.push(function(){k.ok=0;k.ed=2;yz("Üniversiteden mezun oldun!");isTeklif()});
+if(!k.me&&!k.ok&&!k.tk&&k.yas>18&&k.yas<60&&Math.random()<.35)q.push(function(){soru("Şu an bir işin yok ve masrafların birikiyor.",[["İş ara",isTeklif],["Şimdilik arama",function(){}]])});
+if(k.yas==65&&cl())q.push(function(){soru("65 yaşına geldin.",[["Emekli ol",function(){k.me="emekli"}],["Çalışmaya devam et",function(){}]])});
+if(k.ay+k.yas==k.ao){yz("Annen vefat etti.");et({mu:-20})}if(k.by+k.yas==k.bo){yz("Baban vefat etti.");et({mu:-20})}
+if(k.kar&&Math.random()<.12)yz(sc(["Kardeşin evlendi.","Kardeşin iş buldu.","Kardeşin taşındı.","Kardeşinin çocuğu oldu."]));
+if(k.yas<25&&k.sa<10)k.sa=10;
+hob();if(ok())return;
+if(Math.random()<.65){var u=E.filter(function(e){return k.yas>=e[0]&&k.yas<=e[1]&&(!e[2]||e[2]())});if(u.length)q.push(sc(u)[3])}
+ci();kd()}
+function mk(t,f){return[t,function(){ma=0;$("mn").style.display="none";f();ci();kd()}]}
+function mnA(){if(!k||k.olu||bk)return;ma=!ma;$("mn").style.display=ma?"block":"none";if(ma)mnC()}
+function mnC(){var l=[],d=$("mn");d.innerHTML="";
+if(k.yas>=10)l.push(mk("Sağlığına yatırım yap (spor salonu, check-up)",function(){ode("Sağlık yatırımı.",AS()*0.1,function(){et({sa:8});yz("Sağlığına yatırım yaptın.")},function(){})}));
+if(k.yas>=8)l.push(mk("Kendine yatırım yap (kurs, kitap)",function(){ode("Kişisel gelişim kursu.",AS()*0.08,function(){et({ze:6});yz("Kendine yatırım yaptın.")},function(){})}));
+if(k.yas>=18&&k.pa>0)l.push(mk("Birikiminin yarısını yatırıma koy",function(){var x=k.pa/2;k.pa-=x;k.yt+=x;yz("Yatırım yaptın: "+para(x))}));
+if(k.yt>0)l.push(mk("Yatırımını nakite çevir",function(){k.pa+=k.yt;yz("Yatırımını çektin: "+para(k.yt));k.yt=0}));
+if(k.pa>0)l.push(mk("Bağış / zekat ver (birikimin %10'u)",function(){var x=k.pa*0.1;k.pa-=x;et({mu:6});yz("İhtiyaç sahiplerine "+para(x)+" verdin.")}));
+if(k.ok&&!k.bu)l.push(mk("Burs başvurusu yap",function(){k.bu=Math.random()*100<k.ze-10?1:-1;yz(k.bu>0?"Burs kazandın!":"Burs başvurun reddedildi.")}));
+if(k.yas>=14&&k.ok!=2)l.push(mk(cl()?"İş değiştir":"İş ara",isTeklif));
+if(cl())l.push(mk("İşten ayrıl",function(){yz(k.me+" işinden ayrıldın.");k.me=""}));
+if(k.yas>=14&&!k.sv&&!k.es)l.push(mk("Biriyle tanışmaya çalış",ask));
+if(k.sv&&k.yas>=18)l.push(mk("Sevgiline evlilik teklif et",function(){ode("Düğün masrafı.",OR()*0.5,function(){k.es=1;k.sv=0;yz("Evlendin!");et({mu:12})},function(){})}));
+if(k.kr>0&&k.pa>0)l.push(mk("Kredi borcunu öde",function(){var x=Math.min(k.pa,k.kr);k.pa-=x;k.kr-=x;yz("Krediye "+para(x)+" ödedin.")}));
+if(k.ab>0&&k.pa>0)l.push(mk("Aile borcunu öde",function(){var x=Math.min(k.pa,k.ab);k.pa-=x;k.ab-=x;et({mu:2})}));
+if(!k.vk)l.push(mk(k.yas<18?"Ailenle vakit geçir":"Sevdiklerinle dışarı çık",function(){k.vk=1;
+ if(k.yas<18){et({mu:4,ar:2});yz("Ailenle vakit geçirdin.")}
+ else ode("Yemek ve gezme masrafı.",OR()*0.03,function(){et({mu:5,ar:3});yz("Sevdiklerinle güzel vakit geçirdin.")},function(){k.vk=0})}));
+l.push(["Kapat",function(){ma=0;d.style.display="none"}]);
+l.forEach(function(b){var e=document.createElement("button");e.innerText=b[0];e.onclick=b[1];d.appendChild(e)})}
+function ok(){if(k.olu)return 1;if(k.yas>=k.ol||(k.sa<=0&&k.yas>=25)){k.olu=1;yz("Vefat ettin.");bit();return 1}return 0}
+function bit(){var f=k.yas-k.o;$("ol").innerText=k.yas+" yaşında vefat ettin.\n"+k.u+" ortalaması "+k.o+" yıl. Sen "+(f>=0?f+" yıl fazla":-f+" yıl az")+" yaşadın.\nGeride kalan: "+para(k.pa+k.yt-k.kr-k.ab)+"\n\nHer gün milyonlarca insan çok farklı şartlarda doğuyor. Hayatının kıymetini bil.";
+$("ho").innerHTML="";bt([["Yeniden doğ",function(){localStorage.removeItem("hy5");dog()}]]);kd()}
+function bas(){ci();$("gn").innerText=k.g.join("\n");hob();bk=0;q=[];if(k.olu)return bit();hzb();clearInterval(tm);
+tm=setInterval(function(){if(du||bk||ma||k.olu)return;if(q.length){q.shift()();ci();return}ge+=.25*hz;if(ge>=YIL)yil();else ci()},250)}
+var v=JSON.parse(localStorage.getItem("hy5")||"0");if(v&&v[0]){k=v[0];hz=v[1];ge=v[2];bas()}else bt([["Doğ",dog]]);
+</script>
