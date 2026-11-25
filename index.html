@@ -1,325 +1,420 @@
 <!DOCTYPE html>
-<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hayat Oyunu</title>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Bir Hayat - 8 Milyarda 1</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,Helvetica,sans-serif;background:#0d0d14;color:#f2f2f2}
-button,select{font-family:inherit}
-#intro{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;text-align:center;padding:20px;transition:opacity 1s}
-.kalp{width:14px;height:14px;border-radius:50%;background:#ff3b5c;animation:atis 1.1s infinite}
-@keyframes atis{0%,100%{transform:scale(1);opacity:.6}15%{transform:scale(1.9);opacity:1}30%{transform:scale(1)}45%{transform:scale(1.5)}}
-.yz{opacity:0;transition:opacity 1.2s;font-size:20px;margin:12px 0}
-.gor{opacity:1}
-#harita{width:100%;max-width:420px;height:200px;margin:8px 0}
-.nok{fill:#ffd166;animation:son 2s forwards}
-@keyframes son{0%{opacity:1}100%{opacity:.3}}
-.buyuk{font-size:32px;font-weight:800;letter-spacing:1px}
-.btn{background:linear-gradient(135deg,#ff5f6d,#ffc371);color:#111;font-weight:800;font-size:22px;padding:14px 46px;border:none;border-radius:30px;box-shadow:0 0 25px #ff5f6d88}
-.ekr{display:none;padding:16px;max-width:520px;margin:0 auto}
-.kart{background:#1a1a26;border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 4px 14px #0006}
-.sec button{background:#2a2a3a;color:#fff;border:none;border-radius:12px;padding:9px 13px;margin:3px;font-size:15px}
-.sec button.s{background:#ff9800;color:#111}
-select{width:100%;padding:10px;border-radius:10px;background:#2a2a3a;color:#fff;border:none;font-size:15px;margin-top:8px}
-.bar{height:9px;background:#333;border-radius:5px;overflow:hidden;margin:3px 0 9px}
-.bar i{display:block;height:100%;border-radius:5px;transition:width .5s}
-#olay{text-align:center}
-#olay .ikon{font-size:46px}
-#olay .metin{font-size:17px;margin:8px 0;white-space:pre-line}
-#olay button{display:block;width:100%;background:#2d2d44;color:#fff;border:none;border-radius:12px;padding:12px;margin:6px 0;font-size:15px;text-align:left}
-#mb{position:fixed;top:10px;right:10px;z-index:20;background:#2196f3;color:#fff;border:none;border-radius:12px;padding:8px 12px;font-size:15px}
-#mn{display:none;position:fixed;top:54px;left:8px;right:8px;background:#1d1d2b;border:1px solid #444;border-radius:14px;padding:8px;z-index:20;max-height:75%;overflow:auto}
-#mn button{display:block;width:100%;text-align:left;background:#2a2a3a;color:#fff;border:none;border-radius:10px;padding:11px;margin:4px 0;font-size:15px}
-#gn{font-size:13px;color:#aaa;max-height:180px;overflow:auto;white-space:pre-line}
-.dig{display:flex;gap:6px;overflow-x:auto;padding-top:6px}
-.bebek{flex:0 0 auto;background:#222233;border-radius:12px;padding:6px 8px;font-size:12px;min-width:90px;text-align:center}
-#karakter{text-align:center;height:200px}
-.ust{display:flex;justify-content:space-between;align-items:center}
-.k{font-size:13px;color:#aaa}
-</style></head><body>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#0b0f1a;color:#e8ecf5;height:100vh;overflow:hidden}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+.screen.on{display:flex}
+#mapCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.introBox{position:relative;z-index:1;text-align:center}
+.introBox h1{font-size:34px;letter-spacing:2px;margin-bottom:6px}
+.introBox p{opacity:.75;margin-bottom:6px}
+#bornCount{font-size:28px;font-weight:700;color:#ffd166;margin:10px 0 24px}
+.btn{background:#ffd166;color:#111;border:none;border-radius:14px;padding:14px 26px;font-size:18px;font-weight:700;margin:6px;cursor:pointer}
+.btn.alt{background:#1f2a44;color:#e8ecf5}
+.btn.sm{padding:8px 12px;font-size:14px;border-radius:10px}
+input{background:#1f2a44;border:1px solid #33415f;color:#fff;border-radius:10px;padding:10px;font-size:15px;width:200px;text-align:center}
+.slotRow{font-size:15px;opacity:.7;margin-top:14px}
+.slotVal{font-size:30px;font-weight:800;color:#ffd166;min-height:40px}
+#game{justify-content:flex-start;padding:0}
+.top{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#121a2e}
+.top .money{font-size:14px}
+.top .money b{color:#06d6a0}
+#age{font-size:20px;font-weight:800}
+.speed{display:flex;gap:4px}
+.speed button{background:#1f2a44;color:#fff;border:none;border-radius:8px;padding:6px 9px;font-weight:700}
+.speed button.act{background:#ffd166;color:#111}
+#avatarWrap{height:150px;display:flex;align-items:flex-end;justify-content:center;width:100%;background:linear-gradient(#121a2e,#0b0f1a)}
+#avatar{transition:font-size 1s;font-size:50px;line-height:1}
+#place{font-size:13px;opacity:.7;text-align:center;padding:4px}
+#stats{width:100%;padding:6px 12px;font-size:13px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#stats div{background:#121a2e;border-radius:10px;padding:7px}
+#stats span{display:block;opacity:.6;font-size:11px}
+#story{flex:1;width:100%;overflow-y:auto;padding:10px 14px;font-size:14px;line-height:1.5}
+#story p{margin-bottom:6px;border-left:3px solid #33415f;padding-left:8px}
+#story p.y{border-color:#ffd166;font-weight:700}
+#story p.bad{border-color:#ef476f}
+#story p.good{border-color:#06d6a0}
+#menu{position:absolute;top:56px;right:8px;background:#121a2e;border-radius:14px;padding:8px;display:none;flex-direction:column;z-index:5;width:230px;box-shadow:0 8px 30px #000a}
+#menu.on{display:flex}
+#menu button{background:none;border:none;color:#fff;text-align:left;padding:10px;font-size:15px;border-radius:8px}
+#menu button:active{background:#1f2a44}
+#modal{position:absolute;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:10;padding:18px}
+#modal.on{display:flex}
+.mBox{background:#121a2e;border-radius:18px;padding:20px;width:100%;max-width:420px}
+#mTitle{font-size:19px;margin-bottom:8px}
+#mText{opacity:.85;margin-bottom:14px;line-height:1.45}
+#mChoices button{display:block;width:100%;margin:6px 0;background:#1f2a44;color:#fff;border:none;border-radius:12px;padding:12px;font-size:15px;text-align:left}
+#endCard{background:linear-gradient(135deg,#1f2a44,#3a1f44);border-radius:20px;padding:22px;max-width:420px;width:100%;text-align:center;line-height:1.6}
+#endCard h2{color:#ffd166;margin-bottom:8px}
+.badge{display:inline-block;background:#ffd16633;border-radius:20px;padding:3px 10px;margin:3px;font-size:12px}
+</style>
+</head>
+<body>
 
-<div id="intro">
- <div class="kalp"></div>
- <div class="yz" id="y1">Şu an dünyada her saniye yaklaşık 4 bebek doğuyor.</div>
- <svg id="harita" viewBox="0 0 360 180"></svg>
- <div class="yz" id="y2"><b id="isay">0</b> bebek doğdu</div>
- <div class="yz buyuk" id="y3">Sıradaki sensin.</div>
- <div class="yz" id="y4"><button class="btn" onclick="anaAc()">Başla</button></div>
- <div style="position:absolute;bottom:24px;font-size:14px;color:#777" onclick="anaAc()">Geç ›</div>
+<div id="intro" class="screen on">
+  <canvas id="mapCanvas"></canvas>
+  <div class="introBox">
+    <h1>BİR HAYAT</h1>
+    <p>Şu an dünyada her saniye ~4 bebek doğuyor.</p>
+    <p>Sen hangisi olacaksın?</p>
+    <div id="bornCount">0</div>
+    <button class="btn" id="btnBorn">DOĞ</button><br><br>
+    <input id="codeInput" placeholder="Hayat kodu (isteğe bağlı)"><br>
+    <button class="btn alt sm" id="btnDaily" style="margin-top:8px">Günün Hayatı</button>
+    <button class="btn alt sm" id="btnContinue" style="margin-top:8px;display:none">Devam Et</button>
+  </div>
 </div>
 
-<div class="ekr" id="ana">
- <h1 style="text-align:center;font-size:34px;margin:30px 0 4px">Hayat Oyunu</h1>
- <p style="text-align:center;color:#bbb">Nerede ve kime doğacağını sen seçmiyorsun. Tıpkı gerçek hayatta olduğu gibi.</p>
- <div class="kart" style="text-align:center">
-  <b id="asay" style="font-size:30px">0</b><div class="k">bebek, bu sayfayı açtığından beri doğdu</div><br>
-  <b id="osay" style="font-size:22px">0</b><div class="k">kişi bu sürede hayatını kaybetti</div>
- </div>
- <div class="kart sec"><b>Bir hayat ne kadar sürsün?</b><br>
-  <button onclick="sure(20,this)">Kısa</button><button class="s" onclick="sure(40,this)">Normal</button><button onclick="sure(60,this)">Uzun</button>
-  <div class="k">Normal'de bir yıl 40 saniye sürer. Oyunda hızlandırabilirsin.</div></div>
- <div class="kart"><b>Gerçekte nerede doğdun?</b> <span class="k">(isteğe bağlı, sonunda karşılaştırılır)</span>
-  <select id="gercek"><option value="">Seçme</option></select></div>
- <div style="text-align:center;margin:24px 0"><button class="btn" onclick="dog()">Doğ</button></div>
- <div id="devamK" style="text-align:center"></div>
+<div id="slot" class="screen">
+  <div class="slotRow">Ülke</div><div class="slotVal" id="slotCountry">...</div>
+  <div class="slotRow">Yer</div><div class="slotVal" id="slotCity">...</div>
+  <div class="slotRow">Cinsiyet</div><div class="slotVal" id="slotGender">...</div>
+  <div class="slotRow">Aile</div><div class="slotVal" id="slotFamily" style="font-size:18px">...</div>
 </div>
 
-<div class="ekr" id="oyun">
- <button id="mb" onclick="mnA()">☰ Menü</button><div id="mn"></div>
- <div class="kart"><div class="ust"><div><b id="ek" style="font-size:20px"></b><div class="k" id="bi"></div></div>
-  <div id="yasK" style="font-size:30px;font-weight:800"></div></div>
-  <div class="bar"><i id="ilr" style="background:#2196f3;width:0"></i></div></div>
- <div id="karakter"></div>
- <div class="kart" id="olay" style="display:none"></div>
- <div class="kart" id="du"></div>
- <div class="kart sec" id="ko"></div>
- <div class="kart sec" id="ho"></div>
- <div class="kart"><b>Aynı saniyede doğanlar</b><div class="dig" id="dig"></div></div>
- <div class="kart"><b>Hayat hikayen</b><div id="gn"></div></div>
+<div id="game" class="screen">
+  <div class="top">
+    <div><div id="age">0 yaş</div><div class="money"><b id="money">0</b> <small id="moneyTL"></small></div></div>
+    <div class="speed" id="speedBtns">
+      <button data-s="0">⏸</button><button data-s="1" class="act">1x</button><button data-s="2">2x</button><button data-s="3">3x</button><button data-s="4">4x</button>
+    </div>
+    <button class="btn alt sm" id="menuBtn">☰</button>
+  </div>
+  <div id="avatarWrap"><div id="avatar">👶</div></div>
+  <div id="place"></div>
+  <div id="stats"></div>
+  <div id="story"></div>
+  <div id="menu"></div>
 </div>
 
+<div id="modal"><div class="mBox"><div id="mTitle"></div><div id="mText"></div><div id="mChoices"></div></div></div>
+
+<div id="end" class="screen"><div id="endCard"></div></div>
+
 <script>
-var U=[["Hindistan",1450,72,55,"Mumbai,Delhi,Kalküta","Hinduizm:79,İslam:15,Hristiyanlık:3,Dinsiz:3","rupi",90,49,336,21,78],
-["Çin",1410,78,35,"Şanghay,Pekin,Guangzhou","Dinsiz:70,Budizm:18,Halk inancı:7,Hristiyanlık:5","yuan",7.2,602,1556,35,104],
-["Amerika",345,79,20,"New York,Los Angeles,Chicago","Hristiyanlık:63,Dinsiz:29,Diğer:8","dolar",1,1160,6228,39,-98],
-["Endonezya",280,72,50,"Cakarta,Surabaya,Bandung","İslam:87,Hristiyanlık:10,Diğer:3","rupiah",16000,193,300,-2,118],
-["Pakistan",250,67,65,"Karaçi,Lahor,İslamabad","İslam:96,Diğer:4","rupi",280,92,140,30,70],
-["Nijerya",230,55,75,"Lagos,Kano,Abuja","İslam:50,Hristiyanlık:47,Diğer:3","naira",1500,42,220,9,8],
-["Brezilya",212,75,45,"São Paulo,Rio,Salvador","Hristiyanlık:87,Dinsiz:10,Diğer:3","real",5.6,217,588,-10,-52],
-["Bangladeş",175,74,60,"Dakka,Chittagong,Khulna","İslam:91,Hinduizm:8,Diğer:1","taka",122,104,149,24,90],
-["Rusya",144,73,35,"Moskova,St. Petersburg,Kazan","Hristiyanlık:70,Dinsiz:15,İslam:13,Diğer:2","ruble",80,258,1034,57,50],
-["Etiyopya",130,67,75,"Addis Ababa,Dire Dawa,Mekele","Hristiyanlık:67,İslam:31,Diğer:2","birr",140,43,60,9,40],
-["Meksika",130,75,45,"Mexico City,Guadalajara,Monterrey","Hristiyanlık:88,Dinsiz:10,Diğer:2","peso",18.5,512,881,23,-102],
-["Japonya",123,85,15,"Tokyo,Osaka,Nagoya","Şinto/Budizm:60,Dinsiz:38,Diğer:2","yen",150,1136,2523,36,138],
-["Mısır",115,72,55,"Kahire,İskenderiye,Giza","İslam:90,Hristiyanlık:10","pound",50,92,135,27,30],
-["Türkiye",87,77,35,"İstanbul,Ankara,İzmir","İslam:95,Dinsiz:4,Diğer:1","lira",45,528,750,39,35],
-["Almanya",84,81,15,"Berlin,Hamburg,Münih","Hristiyanlık:50,Dinsiz:43,İslam:6,Diğer:1","euro",0.86,2494,5366,51,10],
-["İngiltere",69,81,18,"Londra,Manchester,Birmingham","Hristiyanlık:46,Dinsiz:40,İslam:7,Diğer:7","sterlin",0.75,2729,4365,54,-2],
-["Fransa",66,83,16,"Paris,Marsilya,Lyon","Hristiyanlık:48,Dinsiz:42,İslam:9,Diğer:1","euro",0.86,2157,3926,46,2],
-["Güney Kore",52,84,16,"Seul,Busan,Incheon","Dinsiz:51,Hristiyanlık:31,Budizm:18","won",1400,1230,2949,36,128],
-["Kanada",41,82,15,"Toronto,Montreal,Vancouver","Hristiyanlık:53,Dinsiz:35,Diğer:12","dolar",1.4,2072,4085,56,-106],
-["Çekya",11,79,15,"Prag,Brno,Ostrava","Dinsiz:75,Hristiyanlık:23,Diğer:2","kron",21,990,2050,50,15]];
-var TL=45;
-var IS={y:"tarım işçisi,inşaat işçisi,seyyar satıcı,temizlikçi,garson".split(","),o:"öğretmen,memur,şoför,esnaf,hemşire,teknisyen".split(","),z:"doktor,avukat,mühendis,iş insanı,yazılımcı".split(",")};
-var HB={Spor:{sa:3,mu:1},Müzik:{mu:3},Kitap:{ze:3},Arkadaşlar:{mu:2,ar:4},"Ek iş":{mu:-2,sa:-1}};
-var YIL=40,k,hz=1,du=false,ge=0,bk=0,ma=0,q=[],tm,iv,t0=Date.now();
-function $(i){return document.getElementById(i)}
-function r(a,b){return a+Math.floor(Math.random()*(b-a+1))}
-function sc(a){return a[r(0,a.length-1)]}
-function c(x){return Math.max(0,Math.min(100,x))}
-function ag(l){var t=0;l.forEach(function(x){t+=x[1]});var z=Math.random()*t;for(var i=0;i<l.length;i++){z-=l[i][1];if(z<0)return l[i]}return l[0]}
-function ub(ad){for(var i=0;i<U.length;i++)if(U[i][0]==ad)return U[i]}
-function ulke(){return ub(k.u)}
-function AS(){return ulke()[8]*12}
-function OR(){return ulke()[9]*12}
-function para(x){var u=ulke();return Math.round(x*u[7]).toLocaleString("tr")+" "+u[6]+" (≈ "+Math.round(x*TL).toLocaleString("tr")+" TL)"}
-function tn(x){return x<20?"Çok kötü":x<40?"Zayıf":x<60?"Orta":x<80?"İyi":"Çok iyi"}
-function goster(id){["ana","oyun"].forEach(function(x){$(x).style.display=x==id?"block":"none"})}
-function introBasla(){var h=$("harita"),s="";
- for(var x=6;x<360;x+=12)for(var y=6;y<180;y+=12)s+='<circle cx="'+x+'" cy="'+y+'" r="0.8" fill="#222"/>';
- U.forEach(function(u){s+='<circle cx="'+(u[11]+180)+'" cy="'+(90-u[10])+'" r="2" fill="#444"/>'});
- h.innerHTML=s;
- setTimeout(function(){$("y1").classList.add("gor")},500);
- setTimeout(function(){$("y2").classList.add("gor");var n=0;
-  iv=setInterval(function(){n++;$("isay").innerText=n;var u=ag(U),e=document.createElementNS("http://www.w3.org/2000/svg","circle");
-   e.setAttribute("cx",u[11]+180+r(-5,5));e.setAttribute("cy",90-u[10]+r(-4,4));e.setAttribute("r","2.5");e.setAttribute("class","nok");h.appendChild(e)},230)},1800);
- setTimeout(function(){$("y3").classList.add("gor")},4300);
- setTimeout(function(){$("y4").classList.add("gor")},5300)}
-function anaAc(){clearInterval(iv);var i=$("intro");i.style.opacity=0;setTimeout(function(){i.style.display="none"},900);goster("ana");
- var s=$("gercek");if(s.options.length<2)U.forEach(function(u){var o=document.createElement("option");o.value=u[0];o.innerText=u[0];s.appendChild(o)});
- setInterval(function(){var t=(Date.now()-t0)/1000;$("asay").innerText=Math.floor(t*4.3).toLocaleString("tr");$("osay").innerText=Math.floor(t*1.97).toLocaleString("tr")},300)}
-function sure(n,b){YIL=n;var l=b.parentNode.getElementsByTagName("button");for(var i=0;i<l.length;i++)l[i].className="";b.className="s"}
+
+// ===== 2. KISIM: VERİ + MOTOR =====
+// Kur ve maaşlar yaklaşık değerlerdir, istediğin zaman güncelleyebilirsin.
+const COUNTRIES=[
+ {n:"Hindistan",cur:"₹",cn:"rupi",tl:0.48,w:17,life:72,sal:30000,rent:9000,food:7000,own:0.6,war:0.01,quake:0.02,
+  cities:["Mumbai","Delhi","Bangalore","Kalküta"],rural:0.62,rel:[["Hindu",0.79],["Müslüman",0.15],["Hristiyan",0.03],["Sih",0.03]]},
+ {n:"Çin",cur:"¥",cn:"yuan",tl:5.9,w:12,life:78,sal:8000,rent:2500,food:1800,own:0.7,war:0.005,quake:0.03,
+  cities:["Şangay","Pekin","Guangzhou","Chengdu"],rural:0.35,rel:[["Dinsiz",0.7],["Budist",0.18],["Hristiyan",0.05],["Müslüman",0.02],["Halk inancı",0.05]]},
+ {n:"Nijerya",cur:"₦",cn:"naira",tl:0.028,w:9,life:54,sal:150000,rent:60000,food:70000,own:0.25,war:0.04,quake:0.001,
+  cities:["Lagos","Abuja","Kano","Ibadan"],rural:0.47,rel:[["Müslüman",0.5],["Hristiyan",0.48],["Yerel inanç",0.02]]},
+ {n:"Pakistan",cur:"₨",cn:"rupi",tl:0.15,w:6,life:67,sal:60000,rent:25000,food:25000,own:0.5,war:0.03,quake:0.03,
+  cities:["Karaçi","Lahor","İslamabad"],rural:0.62,rel:[["Müslüman",0.96],["Hindu",0.02],["Hristiyan",0.02]]},
+ {n:"Endonezya",cur:"Rp",cn:"rupiah",tl:0.0026,w:4,life:71,sal:4500000,rent:1500000,food:1500000,own:0.8,war:0.005,quake:0.05,
+  cities:["Cakarta","Surabaya","Bandung"],rural:0.42,rel:[["Müslüman",0.87],["Hristiyan",0.1],["Hindu",0.02],["Budist",0.01]]},
+ {n:"Etiyopya",cur:"Br",cn:"birr",tl:0.3,w:3.5,life:66,sal:8000,rent:4000,food:4500,own:0.5,war:0.06,quake:0.01,
+  cities:["Addis Ababa","Dire Dawa"],rural:0.77,rel:[["Hristiyan",0.67],["Müslüman",0.31],["Yerel inanç",0.02]]},
+ {n:"Bangladeş",cur:"৳",cn:"taka",tl:0.35,w:2.5,life:73,sal:25000,rent:10000,food:9000,own:0.6,war:0.005,quake:0.02,
+  cities:["Dakka","Chittagong"],rural:0.6,rel:[["Müslüman",0.91],["Hindu",0.08],["Budist",0.01]]},
+ {n:"Mısır",cur:"E£",cn:"pound",tl:0.85,w:2,life:71,sal:9000,rent:4000,food:4000,own:0.6,war:0.01,quake:0.01,
+  cities:["Kahire","İskenderiye"],rural:0.57,rel:[["Müslüman",0.9],["Hristiyan",0.1]]},
+ {n:"Brezilya",cur:"R$",cn:"real",tl:7.8,w:2,life:76,sal:3200,rent:1500,food:900,own:0.7,war:0.002,quake:0.001,
+  cities:["São Paulo","Rio de Janeiro","Salvador"],rural:0.13,rel:[["Hristiyan",0.86],["Dinsiz",0.1],["Diğer",0.04]]},
+ {n:"ABD",cur:"$",cn:"dolar",tl:42,w:2.7,life:78,sal:5000,rent:1700,food:600,own:0.65,war:0.002,quake:0.01,
+  cities:["New York","Los Angeles","Chicago","Houston"],rural:0.17,rel:[["Hristiyan",0.63],["Dinsiz",0.29],["Diğer",0.08]]},
+ {n:"Türkiye",cur:"₺",cn:"lira",tl:1,w:1,life:77,sal:35000,rent:15000,food:12000,own:0.57,war:0.005,quake:0.06,
+  cities:["İstanbul","Ankara","İzmir","Diyarbakır"],rural:0.24,rel:[["Müslüman",0.95],["Dinsiz",0.04],["Diğer",0.01]]},
+ {n:"Almanya",cur:"€",cn:"euro",tl:48,w:0.6,life:81,sal:3500,rent:1000,food:450,own:0.47,war:0.001,quake:0.001,
+  cities:["Berlin","Münih","Hamburg"],rural:0.22,rel:[["Hristiyan",0.5],["Dinsiz",0.43],["Müslüman",0.06],["Diğer",0.01]]},
+ {n:"Japonya",cur:"¥",cn:"yen",tl:0.28,w:0.6,life:84,sal:330000,rent:90000,food:50000,own:0.61,war:0.001,quake:0.08,
+  cities:["Tokyo","Osaka","Sapporo"],rural:0.08,rel:[["Şinto/Budist",0.7],["Dinsiz",0.27],["Hristiyan",0.03]]}
+];
+const JOBS_PARENT=[["Çiftçi",0.5],["İşçi",0.8],["Esnaf",1],["Öğretmen",1.1],["Hemşire",1.1],["Mühendis",1.8],["Doktor",2.5],["İşsiz",0.15],["Ev hanımı",0]];
+const NAMES={E:["Ali","Rahul","Wei","Chinedu","Ahmed","Lucas","James","Kenji","Mehmet","Yusuf","Arjun","Jonas"],K:["Ayşe","Priya","Mei","Amaka","Fatima","Ana","Emma","Yuki","Zeynep","Meryem","Sara","Lena"]};
+
+// ===== Tohumlu rastgele (hayat kodu) =====
+let seed=Date.now()%100000;
+function setSeed(s){seed=s>>>0}
+function rnd(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}
+function ri(a,b){return Math.floor(rnd()*(b-a+1))+a}
+function pick(a){return a[Math.floor(rnd()*a.length)]}
+function wpick(list){let s=list.reduce((x,i)=>x+i[1],0),r=rnd()*s;for(const i of list){r-=i[1];if(r<=0)return i[0]}return list[0][0]}
+function codeToSeed(c){let h=0;for(const ch of c.toUpperCase())h=(h*31+ch.charCodeAt(0))>>>0;return h}
+function dailyCode(){const d=new Date();return "GUN"+d.getFullYear()+(d.getMonth()+1)+d.getDate()}
+function randCode(){const c="ABCDEFGHJKLMNPRSTUVYZ23456789";let s="";for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+
+// ===== Oyun durumu =====
+let S=null, speed=1, timer=null, yearProg=0, paused=false;
+const YEAR_MS=40000; // 1x hızda bir yıl 40 saniye
+
+function newLife(code){
+  setSeed(codeToSeed(code));
+  const C=wpick(COUNTRIES.map(c=>[c,c.w]));
+  const rural=rnd()<C.rural;
+  const g=rnd()<0.51?"E":"K";
+  const pj=[wpick(JOBS_PARENT),wpick(JOBS_PARENT)];
+  const pMult=(JOBS_PARENT.find(j=>j[0]==pj[0])[1]+JOBS_PARENT.find(j=>j[0]==pj[1])[1])/2;
+  S={code,c:C.n,city:rural?pick(C.cities)+" yakınında bir köy":pick(C.cities),rural,g,name:pick(NAMES[g]),
+    rel:wpick(C.rel),age:0,money:0,familyMoney:Math.round(C.sal*pMult*(rural?6:12)),
+    health:rural?65:75,smart:ri(30,80),happy:60,social:40,
+    parents:{dad:pj[0],mom:pj[1],dadAlive:true,momAlive:true,home:rnd()<C.own?"kendi evleri":"kirada"},
+    siblings:ri(0,rural?5:2),edu:"yok",school:false,job:null,salary:0,partner:null,kids:0,
+    debt:0,loanRate:0,invest:0,smoke:false,group:null,flags:{},delayed:[],log:[],badges:[],dead:false,cause:""};
+  return S;
+}
+function C(){return COUNTRIES.find(c=>c.n==S.c)}
+
+// ===== Para gösterimi =====
+function fmt(v){return Math.round(v).toLocaleString("tr-TR")}
+function moneyStr(v){const c=C();return c.cur+" "+fmt(v)+(c.tl!=1?"  (≈ ₺"+fmt(v*c.tl)+")":"")}
+
+// ===== Sayı yerine açıklama =====
+function dHealth(h){return h>85?"Turp gibi":h>65?"Sağlıklı":h>45?"Sık hastalanıyor":h>25?"Ciddi sorunlar var":"Çok kötü"}
+function dSmart(s){return s>85?"Parlak zekâ":s>65?"Zeki":s>45?"Ortalama":s>25?"Zorlanıyor":"Çok zorlanıyor"}
+function dHappy(h){return h>80?"Mutlu":h>60?"Keyfi yerinde":h>40?"Eh işte":h>20?"Mutsuz":"Çok mutsuz"}
+function dSocial(s){return s>75?"Çok arkadaşı var":s>50?"Birkaç yakın dostu var":s>25?"Az arkadaşı var":"Yalnız"}
+function clamp(){for(const k of["health","smart","happy","social"])S[k]=Math.max(0,Math.min(100,S[k]))}
+
+// ===== Gecikmeli sonuçlar (ör. sigara yıllar sonra) =====
+function later(years,fn,text){S.delayed.push({at:S.age+years,fn,text})}
+function runDelayed(){
+  S.delayed=S.delayed.filter(d=>{
+    if(S.age>=d.at){ if(DELAYED_FX[d.fn])DELAYED_FX[d.fn](); if(d.text)log(d.text,"bad"); return false }
+    return true });
+}
+const DELAYED_FX={
+  smokeSick(){S.health-=25;S.flags.lung=true},
+  studyPay(){S.smart+=5;S.salary=Math.round(S.salary*1.2)},
+  friendHelp(){S.money+=C().sal*2;S.happy+=10},
+  badCrowd(){S.health-=10;S.happy-=10}
+};
+
+// ===== Hikaye satırı =====
+function log(t,cls){S.log.push({t,cls:cls||""});if(typeof renderStory=="function")renderStory()}
+
+// ===== Bir yıl geçtiğinde =====
+function yearPassed(){
+  if(S.dead)return;
+  S.age++;
+  const c=C();
+  log("🎂 "+S.age+" yaşına girdin.","y");
+  // Gelir-gider
+  if(S.age>=18){
+    const inc=S.salary*12, cost=(S.rent0?0:c.rent*12)+c.food*12*(1+S.kids*0.5);
+    S.money+=inc-cost;
+    if(S.invest>0){const r=(rnd()*0.3-0.08);const gain=S.invest*r;S.invest+=gain;
+      if(Math.abs(gain)>c.sal)log(gain>0?"📈 Yatırımın kazandırdı: +"+moneyStr(gain):"📉 Yatırımın değer kaybetti: "+moneyStr(gain),gain>0?"good":"bad")}
+    if(S.debt>0){S.debt*=1+S.loanRate;const pay=Math.min(S.debt,Math.max(0,S.money*0.3));S.debt-=pay;S.money-=pay}
+    if(S.money<0&&S.debt==0){S.happy-=8;log("Ay sonunu getiremiyorsun, borç birikiyor.","bad")}
+  }
+  // Yaşlanma ve sağlık
+  if(S.age>40)S.health-=ri(0,2)+(S.age>65?2:0);
+  if(S.smoke)S.health-=1;
+  if(S.rural&&S.age<5&&rnd()<0.02*(100-c.life)/20){S.health-=20;log("Ağır bir hastalık geçirdin; köyde doktor yoktu.","bad")}
+  // Anne-baba vefatı
+  const pa=S.age+25;
+  if(S.parents.dadAlive&&rnd()<Math.max(0,(pa-c.life+15))/60){S.parents.dadAlive=false;S.happy-=20;log("🕯️ Baban vefat etti.","bad")}
+  if(S.parents.momAlive&&rnd()<Math.max(0,(pa-c.life+10))/60){S.parents.momAlive=false;S.happy-=20;log("🕯️ Annen vefat etti.","bad")}
+  // Dünya olayları
+  if(rnd()<c.war){S.health-=15;S.money*=0.6;S.happy-=20;log("⚔️ Ülkende çatışma çıktı. Her şey değişti.","bad")}
+  if(rnd()<c.quake){const d=ri(5,30);S.health-=d;S.money*=0.8;log("🌍 Deprem oldu. "+(d>20?"Evin yıkıldı.":"Korkuyla atlattın."),"bad")}
+  if(rnd()<0.03){S.money*=0.85;log("💸 Ekonomik kriz: fiyatlar uçtu, birikimin eridi.","bad")}
+  runDelayed();
+  clamp();
+  // Ölüm kontrolü
+  const risk=(S.health<10?0.4:0)+Math.max(0,(S.age-c.life+5))*0.02+(S.age<5?(100-c.life)/400:0);
+  if(rnd()<risk){endLife(S.health<10?"hastalık":"yaşlılık");return}
+  // Seçimli olay
+  const ev=pickEvent();
+  if(ev)showEvent(ev);
+  save();renderAll();
+}
+
+// ===== Zaman döngüsü =====
+function startLoop(){
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    if(paused||speed==0||S.dead||document.getElementById("modal").classList.contains("on"))return;
+    yearProg+=100*speed;
+    if(yearProg>=YEAR_MS){yearProg=0;yearPassed()}
+  },100);
+}
+
+// ===== Kayıt =====
+function save(){try{localStorage.setItem("birHayat",JSON.stringify(S))}catch(e){}}
+function load(){try{return JSON.parse(localStorage.getItem("birHayat"))}catch(e){return null}}
+
+// ===== 3. KISIM: OLAYLAR + EKRAN =====
+const $=id=>document.getElementById(id);
+const sal=()=>C().sal;
+function ev(o){return o}
+const EVENTS=[
+ ev({id:"toy",min:3,max:5,title:"Oyuncak",text:"Kreşte bir çocuk en sevdiğin oyuncağını istiyor.",ch:[
+  ["Paylaşırım",()=>{S.social+=8;S.flags.kind=true;log("Oyuncağını paylaştın, yeni bir arkadaşın oldu.","good")}],
+  ["Vermem!",()=>{S.happy+=3;S.social-=5;log("Oyuncağını vermedin, o çocuk seninle konuşmadı.")}]]}),
+ ev({id:"school",min:6,max:7,title:"Okul zamanı",text:"Okula başlama yaşın geldi ama ailenin yardıma ihtiyacı var.",ch:[
+  ["Okula gideyim",()=>{S.school=true;S.edu="ilkokul";log("Okula başladın.","good")}],
+  ["Aileme yardım edeyim",()=>{S.familyMoney+=sal()*2;S.smart-=10;log("Okul yerine tarlada/dükkânda çalıştın.","bad")}]]}),
+ ev({id:"study9",min:8,max:10,cond:()=>S.school,title:"Ödev mi oyun mu?",text:"Yarın sınav var, arkadaşların dışarıda top oynuyor.",ch:[
+  ["Ders çalışırım",()=>{S.smart+=7;later(12,"studyPay");log("Sınavdan yüksek aldın.","good")}],
+  ["Oyuna giderim",()=>{S.happy+=6;S.social+=5;S.smart-=3;log("Çok eğlendin ama sınav kötü geçti.")}]]}),
+ ev({id:"group",min:11,max:13,title:"Arkadaş grubu",text:"Okulda/mahallede kiminle takılacaksın?",ch:[
+  ["Çalışkan grup",()=>{S.group="calis";S.smart+=5;log("Çalışkan bir grupla arkadaş oldun.")}],
+  ["Eğlenceli grup",()=>{S.group="eglen";S.social+=10;S.happy+=5;log("Eğlenceli, biraz da başı belalı bir grup.")}],
+  ["Tek başıma",()=>{S.group="yalniz";S.social-=10;S.smart+=3;log("Kendi başına kaldın, kitaplara gömüldün.")}]]}),
+ ev({id:"smoke",min:14,max:17,cond:()=>S.group=="eglen",title:"Sigara teklifi",text:"Gruptan biri sana sigara uzatıyor: \"Herkes içiyor.\"",ch:[
+  ["Alırım",()=>{S.smoke=true;S.social+=4;later(ri(18,28),"smokeSick","Yıllardır içtiğin sigara akciğerlerini vurdu.");log("İlk sigaranı içtin. Şimdilik bir şey olmadı...")}],
+  ["Hayır",()=>{S.social-=4;log("Reddettin, biraz dışlandın ama sağlığını korudun.","good")}]]}),
+ ev({id:"crowdTrouble",min:15,max:18,cond:()=>S.group=="eglen",title:"Gece yarısı",text:"Grup gece izinsiz bir partiye gitmek istiyor.",ch:[
+  ["Giderim",()=>{S.happy+=5;if(rnd()<0.4){later(3,"badCrowd");log("Parti kavgayla bitti, başın derde girdi.","bad")}else log("Unutulmaz bir geceydi.","good")}],
+  ["Evde kalırım",()=>{S.social-=3;log("Evde kaldın, ertesi gün herkes başka konuşuyordu.")}]]}),
+ ev({id:"olymp",min:14,max:17,cond:()=>S.group=="calis",title:"Yarışma",text:"Öğretmenin seni bir bilim yarışmasına önerdi.",ch:[
+  ["Katılırım",()=>{if(S.smart>60){S.flags.award=true;S.smart+=5;log("🏅 Yarışmada derece aldın!","good")}else log("Elendin ama çok şey öğrendin.")}],
+  ["Uğraşamam",()=>{log("Fırsatı geri çevirdin.")}]]}),
+ ev({id:"crush",min:14,max:19,title:"Kalp çarpıntısı",text:"Biri dikkatini çekiyor, her gördüğünde heyecanlanıyorsun.",ch:[
+  ["Konuşmaya giderim",()=>{if(rnd()<0.5+S.social/200){S.happy+=12;S.flags.firstLove=true;log("❤️ Seni o da beğeniyormuş!","good")}else{S.happy-=8;log("Kibarca reddedildin. Acıttı.","bad")}}],
+  ["Uzaktan bakarım",()=>{S.happy-=2;log("Hiç açılmadın, yıllarca 'ya söyleseydim' diye düşündün.")}]]}),
+ ev({id:"uni",min:17,max:19,cond:()=>S.school,title:"Okul mu iş mi?",text:"Liseyi bitiriyorsun. Ne yapacaksın?",ch:[
+  ["Üniversite",()=>{if(S.smart<45){log("Sınavı kazanamadın.","bad");return}
+    if(S.smart>75&&rnd()<0.6){S.flags.burs=true;log("🎓 Burs kazandın!","good")}else S.familyMoney-=sal()*8;S.edu="üniversite";S.flags.uniEnd=S.age+4;log("Üniversiteye başladın.","good")}],
+  ["Çalışmaya başla",()=>{S.edu="lise";log("Okulu bırakıp iş aramaya başladın.")}]]}),
+ ev({id:"job",min:18,max:60,repeat:true,cond:()=>!S.job&&(!S.flags.uniEnd||S.age>=S.flags.uniEnd),title:"Meslek seçimi",text:"Hangi işi seçeceksin?",chf:()=>{
+   const u=S.edu=="üniversite",o=[["Garson / işçi",0.6],["Satış elemanı",0.8],["Şoför",0.9]];
+   if(u)o.push(["Öğretmen",1.1],["Mühendis",1.8],["Yazılımcı",2],["Doktor",2.6]);
+   if(S.smart>70&&u)o.push(["Kendi şirketim",rnd()<0.3?4:0.4]);
+   return o.map(j=>[j[0]+" (~"+moneyStr(sal()*j[1])+"/ay)",()=>{S.job=j[0];S.salary=Math.round(sal()*j[1]*(0.85+rnd()*0.3));log("💼 "+j[0]+" olarak çalışmaya başladın.","good")}])}}),
+ ev({id:"meet",min:20,max:45,repeat:true,cond:()=>!S.partner,chance:0.35,title:"Biriyle tanıştın",text:"Bir ortamda biriyle uzun uzun sohbet ettin.",ch:[
+  ["Numarasını isterim",()=>{if(rnd()<0.6){S.partner={name:pick(NAMES[S.g=="E"?"K":"E"]),yrs:0,married:false};S.happy+=10;log("❤️ "+S.partner.name+" ile çıkmaya başladın.","good")}else log("Numara verdi ama hiç dönmedi.")}],
+  ["Bir şey yapmam",()=>{log("Gece bitti, bir daha görmedin.")}]]}),
+ ev({id:"marry",min:21,max:55,repeat:true,cond:()=>S.partner&&!S.partner.married,chance:0.4,title:"Evlilik",text:()=>S.partner.name+" ile ciddi düşünüyorsunuz. Düğün masrafı ~"+moneyStr(sal()*6),ch:[
+  ["Evlenelim",()=>{S.money-=sal()*6;S.partner.married=true;S.happy+=15;log("💍 "+S.partner.name+" ile evlendin.","good")}],
+  ["Henüz değil",()=>{if(rnd()<0.3){log(S.partner.name+" beklemekten yoruldu, ayrıldınız.","bad");S.partner=null;S.happy-=15}}],]}),
+ ev({id:"kid",min:23,max:44,repeat:true,cond:()=>S.partner&&S.partner.married&&S.kids<4,chance:0.3,title:"Çocuk",text:"Bir çocuk sahibi olmak ister misiniz? Masraflar artar.",ch:[
+  ["Evet",()=>{S.kids++;S.happy+=12;log("👶 Bir çocuğun oldu!","good")}],
+  ["Şimdi değil",()=>{}]]}),
+ ev({id:"sick",min:5,max:110,repeat:true,chance:0.12,title:"Hastalık",text:()=>"Ciddi bir rahatsızlık. Tedavi: "+moneyStr(sal()*4),ch:[
+  ["Tedavi olurum",()=>{const t=sal()*4;if(S.age<18){S.familyMoney-=t;S.health+=5;log("Ailen tedavini karşıladı.");return}
+    if(S.money>=t){S.money-=t;S.health+=5;log("Tedavi oldun, iyileştin.","good")}else{S.debt+=t;S.loanRate=0.3;S.health+=5;log("Parası yetmedi, faizli kredi çektin.","bad")}}],
+  ["Arkadaştan borç",()=>{if(S.social>50){S.health+=5;S.flags.owe=true;log("Bir dostun yardım etti.","good")}else{S.health-=15;log("Kimse yardım edemedi, tedavisiz kaldın.","bad")}}],
+  ["Tedavi olmam",()=>{S.health-=20;log("Tedavi olmadın; vücudun yıprandı.","bad")}]]}),
+ ev({id:"retire",min:60,max:68,cond:()=>S.job,title:"Emeklilik",text:"Emekli olma vaktin geldi mi?",ch:[
+  ["Emekli olurum",()=>{S.salary=Math.round(S.salary*0.5);S.happy+=10;S.job="Emekli";log("Emekli oldun.","good")}],
+  ["Çalışmaya devam",()=>{S.health-=5;S.money+=sal()*6;log("Çalışmaya devam ettin.")}]]})
+];
+function pickEvent(){
+  const ok=EVENTS.filter(e=>S.age>=e.min&&S.age<=e.max&&(e.repeat||!S.flags["ev_"+e.id])&&(!e.cond||e.cond())&&(!e.chance||rnd()<e.chance));
+  const must=ok.filter(e=>!e.repeat&&S.age==e.max);
+  return must[0]||(ok.length?pick(ok):null);
+}
+function showEvent(e){
+  S.flags["ev_"+e.id]=true;
+  $("mTitle").textContent=e.title;
+  $("mText").textContent=typeof e.text=="function"?e.text():e.text;
+  const ch=e.chf?e.chf():e.ch;$("mChoices").innerHTML="";
+  ch.forEach(c=>{const b=document.createElement("button");b.textContent=c[0];
+    b.onclick=()=>{c[1]();clamp();$("modal").classList.remove("on");save();renderAll()};$("mChoices").appendChild(b)});
+  $("modal").classList.add("on");
+}
+
+// ===== Üst menü =====
+const MENU=[
+ ["❤️ Sağlığına yatırım",()=>sal()*1,()=>{S.health+=8;log("Spora ve check-up'a para harcadın.","good")}],
+ ["📚 Kendine yatırım (kurs)",()=>sal()*1.5,()=>{S.smart+=6;if(S.salary)S.salary=Math.round(S.salary*1.05);log("Bir kurs bitirdin.","good")}],
+ ["👨‍👩‍👧 Sevdiklerinle vakit",()=>sal()*0.5,()=>{S.happy+=8;S.social+=6;log("Sevdiklerinle güzel bir gün geçirdin.","good")}],
+ ["🤲 Bağış / zekât",()=>Math.max(S.money*0.025,sal()*0.2),()=>{S.happy+=6;S.flags.donor=true;log("İhtiyacı olanlara bağış yaptın.","good")}],
+ ["📈 Birikimini yatır",()=>S.money*0.5,()=>{},a=>{S.invest+=a;log("Birikiminin yarısını yatırıma koydun.")}],
+ ["🏦 Banka kredisi",()=>0,()=>{const k=sal()*10;S.money+=k;S.debt+=k;S.loanRate=0.3;log("Faizli kredi çektin: "+moneyStr(k),"bad")}],
+ ["🚭 Sigarayı bırak",()=>0,()=>{if(!S.smoke)return log("Zaten içmiyorsun.");S.smoke=false;S.delayed=S.delayed.filter(d=>d.fn!="smokeSick"||rnd()<0.4);log("Sigarayı bıraktın!","good")}],
+ ["🔑 Hayat kodum",()=>0,()=>alert("Hayat kodun: "+S.code+"\nArkadaşın bu kodla aynı başlangıçla oynayabilir.")]
+];
+function buildMenu(){$("menu").innerHTML="";MENU.forEach(m=>{const b=document.createElement("button");
+  const cost=m[1]();b.textContent=m[0]+(cost>0?" · "+C().cur+fmt(cost):"");
+  b.onclick=()=>{const c=m[1]();if(S.age<18&&c>0&&m[0].indexOf("Hayat")<0){alert("Bunun için 18 yaşını bekle.");return}
+    if(c>S.money){alert("Paran yetmiyor.");return}S.money-=c;m[2]();if(m[3])m[3](c);clamp();$("menu").classList.remove("on");save();renderAll()};
+  $("menu").appendChild(b)})}
+$("menuBtn").onclick=()=>{buildMenu();$("menu").classList.toggle("on")};
+
+// ===== Ekran çizimi =====
+function avatar(){const a=S.age,e=S.g=="E";return a<3?"👶":a<13?(e?"👦":"👧"):a<30?(e?"🧑":"👩"):a<60?(e?"👨":"👩"):(e?"👴":"👵")}
+function renderStory(){$("story").innerHTML=S.log.slice(-60).map(l=>"<p class='"+l.cls+"'>"+l.t+"</p>").reverse().join("")}
+function renderAll(){
+  $("age").textContent=S.name+" · "+S.age+" yaş";
+  $("money").textContent=S.age<18?"Ailenin: "+moneyStr(S.familyMoney):moneyStr(S.money);
+  $("moneyTL").textContent=S.debt>0?"Borç: "+moneyStr(S.debt):"";
+  $("avatar").textContent=avatar();$("avatar").style.fontSize=Math.min(50+S.age*2,110)+"px";
+  $("place").textContent=S.city+", "+S.c+" · "+(S.job||S.edu);
+  $("stats").innerHTML=[["Sağlık",dHealth(S.health)],["Zekâ",dSmart(S.smart)],["Mutluluk",dHappy(S.happy)],["Sosyal",dSocial(S.social)]]
+    .map(s=>"<div><span>"+s[0]+"</span>"+s[1]+"</div>").join("");
+  renderStory();
+}
+document.querySelectorAll("#speedBtns button").forEach(b=>b.onclick=()=>{speed=+b.dataset.s;
+  document.querySelectorAll("#speedBtns button").forEach(x=>x.classList.remove("act"));b.classList.add("act")});
+
+// ===== Hayat sonu =====
+function endLife(cause){
+  S.dead=true;S.cause=cause;clearInterval(timer);localStorage.removeItem("birHayat");
+  const c=C(),b=[];
+  if(S.age>c.life)b.push("🧓 Ortalamadan uzun");if(S.flags.award)b.push("🏅 Yarışma derecesi");
+  if(S.flags.burs)b.push("🎓 Burslu");if(S.flags.donor)b.push("🤲 Cömert");if(S.kids>=2)b.push("👨‍👩‍👧 Kalabalık aile");
+  if(S.money>c.sal*100)b.push("💰 Varlıklı");if(!S.smoke&&S.group=="eglen")b.push("🚭 Hayır diyebilen");
+  $("endCard").innerHTML="<h2>"+S.name+" ("+S.age+")</h2>"+S.city+", "+S.c+"<br>"+S.rel+" · "+(S.job||S.edu)+
+   "<br><br>Ölüm nedeni: "+cause+"<br>Ülke ortalaması: "+c.life+" yıl — sen "+(S.age>=c.life?"<b style='color:#06d6a0'>"+(S.age-c.life)+" yıl fazla</b>":"<b style='color:#ef476f'>"+(c.life-S.age)+" yıl az</b>")+" yaşadın"+
+   "<br>Geride bıraktığın: "+moneyStr(S.money+S.invest-S.debt)+"<br>Çocuk: "+S.kids+
+   "<br><br>"+b.map(x=>"<span class='badge'>"+x+"</span>").join("")+
+   "<br><br>Hayat kodu: <b>"+S.code+"</b><br><br><button class='btn' onclick='location.reload()'>Yeniden Doğ</button>";
+  $("game").classList.remove("on");$("end").classList.add("on");
+}
+
+// ===== Giriş: noktalı dünya haritası =====
+const MAP=["......................................................",
+"....####.......####...........######.#######..........",
+"..########....###.............##############.######...",
+".###########...#.............####################.....",
+"..##########..................###################.....",
+"....#######..................#####################....",
+".....#####...................##.#################.....",
+"......####...................####..############.......",
+".......###..................#######...#######..##.....",
+"........##.#####............########...####....##.....",
+"..........#######............#######....##......#.....",
+"..........########............#####.............###...",
+"...........######.............####.............#####..",
+"...........#####..............###...............####..",
+"............###................#......................",
+"............##........................................"];
+function drawMap(){
+  const cv=$("mapCanvas"),x=cv.getContext("2d");cv.width=innerWidth;cv.height=innerHeight;
+  const cols=MAP[0].length,rows=MAP.length,cw=cv.width/cols,chh=cv.height*0.6/rows,oy=cv.height*0.08;const dots=[];
+  MAP.forEach((r,j)=>[...r].forEach((ch,i)=>{if(ch=="#")dots.push([i*cw+cw/2,oy+j*chh+chh/2])}));
+  let n=Math.floor(rnd()*1000);
+  setInterval(()=>{if(!$("intro").classList.contains("on"))return;
+    x.fillStyle="#0b0f1a";x.fillRect(0,0,cv.width,cv.height);
+    dots.forEach(d=>{x.fillStyle="#33415f";x.beginPath();x.arc(d[0],d[1],2,0,7);x.fill()});
+    for(let k=0;k<4;k++){const d=dots[Math.floor(Math.random()*dots.length)];x.fillStyle="#ffd166";x.beginPath();x.arc(d[0],d[1],4,0,7);x.fill()}
+    n+=Math.random()<0.5?1:0;$("bornCount").textContent=fmt(n)+" bebek doğdu";},250);
+}
+
+// ===== Slot animasyonu ve başlangıç =====
+function spin(el,list,final,ms){return new Promise(r=>{const t=setInterval(()=>el.textContent=list[Math.floor(Math.random()*list.length)],70);
+  setTimeout(()=>{clearInterval(t);el.textContent=final;r()},ms)})}
+async function startLife(code){
+  newLife(code);$("intro").classList.remove("on");$("slot").classList.add("on");
+  await spin($("slotCountry"),COUNTRIES.map(c=>c.n),S.c,2200);
+  await spin($("slotCity"),C().cities.concat(["Köy"]),S.city,1500);
+  await spin($("slotGender"),["Erkek","Kız"],S.g=="E"?"Erkek":"Kız",900);
+  $("slotFamily").textContent="Baba: "+S.parents.dad+" · Anne: "+S.parents.mom+" · "+S.parents.home+" · "+S.siblings+" kardeş";
+  setTimeout(()=>{$("slot").classList.remove("on");$("game").classList.add("on");
+    log("👶 "+S.city+", "+S.c+"'de "+(S.g=="E"?"bir erkek":"bir kız")+" bebek olarak doğdun. Adın "+S.name+".","y");
+    log("Ailen "+S.rel.toLowerCase()+". Babanın işi: "+S.parents.dad+", annenin: "+S.parents.mom+". "+S.parents.home+" yaşıyorsunuz.");
+    renderAll();startLoop()},2500);
+}
+$("btnBorn").onclick=()=>startLife(($("codeInput").value.trim()||randCode()).toUpperCase());
+$("btnDaily").onclick=()=>startLife(dailyCode());
+const saved=load();
+if(saved&&!saved.dead){$("btnContinue").style.display="inline-block";
+  $("btnContinue").onclick=()=>{S=saved;$("intro").classList.remove("on");$("game").classList.add("on");renderAll();startLoop();
+    const e=EVENTS.find(v=>S.flags["ev_"+v.id]&&false);}}
+drawMap();
 </script>
-<script>
-var SK=["#ffdbac","#f1c27d","#e0ac69","#c68642","#8d5524"],HC=["#2b1b0f","#4a2c17","#111111","#7a4a1e","#c9a15a"];
-function fig(kiz,sk,hc,gom,mutlu,yas,canta){var s="";
- if(kiz)s+='<ellipse cx="0" cy="-140" rx="30" ry="36" fill="'+hc+'"/>';
- s+='<rect x="-14" y="-60" width="11" height="60" rx="4" fill="#334"/><rect x="3" y="-60" width="11" height="60" rx="4" fill="#334"/>';
- if(canta)s+='<rect x="18" y="-118" width="20" height="32" rx="5" fill="#e67e22"/>';
- s+='<rect x="-22" y="-125" width="44" height="70" rx="12" fill="'+gom+'"/>';
- if(kiz)s+='<polygon points="-26,-62 26,-62 18,-85 -18,-85" fill="'+gom+'"/>';
- s+='<rect x="-33" y="-120" width="11" height="52" rx="5" fill="'+sk+'"/><rect x="22" y="-120" width="11" height="52" rx="5" fill="'+sk+'"/>';
- s+='<circle cx="0" cy="-150" r="26" fill="'+sk+'"/>';
- s+='<path d="M-27 -150 A27 27 0 0 1 27 -150 Q0 -165 -27 -150 Z" fill="'+hc+'"/>';
- s+='<circle cx="-9" cy="-150" r="3" fill="#222"/><circle cx="9" cy="-150" r="3" fill="#222"/>';
- s+='<path d="M-8 -138 Q0 '+(mutlu?-131:-144)+' 8 -138" stroke="#622" stroke-width="2.5" fill="none"/>';
- if(yas>=60){s+='<circle cx="-9" cy="-150" r="7" stroke="#ccc" stroke-width="2" fill="none"/><circle cx="9" cy="-150" r="7" stroke="#ccc" stroke-width="2" fill="none"/>';
-  s+='<line x1="42" y1="-70" x2="42" y2="0" stroke="#8b5a2b" stroke-width="5"/>'}
- return s}
-function cizim(){var a=k.yas,kiz=k.cn=="Kız",hc=a>=60?"#dddddd":(a>=45?"#888888":k.hc),mutlu=k.mu>=45;
- var s='<svg viewBox="0 0 200 200" width="200" height="200"><ellipse cx="100" cy="192" rx="80" ry="7" fill="#000" opacity=".35"/>';
- if(a<3){s+='<ellipse cx="100" cy="155" rx="55" ry="30" fill="#7fb3ff"/><circle cx="100" cy="120" r="28" fill="'+k.sk+'"/>';
-  s+='<path d="M90 96 Q100 86 108 96" stroke="'+k.hc+'" stroke-width="4" fill="none"/>';
-  s+='<circle cx="91" cy="118" r="3" fill="#222"/><circle cx="109" cy="118" r="3" fill="#222"/>';
-  s+='<path d="M93 130 Q100 '+(mutlu?136:125)+' 107 130" stroke="#622" stroke-width="2.5" fill="none"/>'}
- else{var f=a<7?.55:a<13?.7:a<18?.85:1,x=k.es?72:100;
-  s+='<g transform="translate('+x+',192) scale('+f+')">'+fig(kiz,k.sk,hc,kiz?"#e05a8a":"#3a7bd5",mutlu,a,k.ok>0)+'</g>';
-  if(k.es)s+='<g transform="translate(140,192) scale(.9)">'+fig(!kiz,k.esk,a>=60?"#dddddd":"#3b2a1a",kiz?"#3a7bd5":"#e05a8a",mutlu,a,0)+'</g>';
-  for(var i=0;i<Math.min(k.co,3);i++)s+='<g transform="translate('+(30+i*28)+',192) scale(.38)">'+fig(i%2==0,k.sk,k.hc,"#2ecc71",true,8,0)+'</g>'}
- $("karakter").innerHTML=s+'</svg>'}
-function bil(t,ic){yz(t);var d=$("olay");d.style.display="block";d.innerHTML='<div class="ikon">'+(ic||"📰")+'</div><div class="metin">'+t+'</div>'}
-function soru(t,l,ic){bk=1;var d=$("olay");d.style.display="block";
- d.innerHTML='<div class="ikon">'+(ic||"❓")+'</div><div class="metin">'+t+'</div>';
- l.forEach(function(s){var b=document.createElement("button");b.innerText=s[0];
-  b.onclick=function(){if(!bk)return;bk=0;yz(t.split("\n")[0]+" → "+s[0]);
-   d.innerHTML='<div class="ikon">✔️</div><div class="metin">'+s[0]+'</div>';s[1]();ci();ok();kd()};d.appendChild(b)})}
-function anneV(){return k.ay+k.yas<k.ao}
-function babaV(){return k.by+k.yas<k.bo}
-function ode(t,cost,bas,vaz,vl){var o=[];
- if(k.pa>=cost)o.push(["💵 Birikiminden öde",function(){k.pa-=cost;bas()}]);
- if(k.yas>=18)o.push(["🏦 Bankadan kredi çek (yıllık %30 faiz)",function(){k.kr+=cost;yz("Kredi çektin: "+para(cost));bas()}]);
- if(!k.ai&&(anneV()||babaV()))o.push(["👪 Ailenden borç iste",function(){k.ai=1;
-  if(Math.random()<{y:.3,o:.6,z:.9}[k.s]){k.ab+=cost;yz("Ailen sana borç verdi.");bas()}
-  else soru("Ailenin buna gücü yetmedi.",[["Tamam",vaz]],"😔")}]);
- o.push([vl||"Vazgeç",vaz]);soru(t+"\nMaliyet: "+para(cost),o,"💰")}
-function maas(t){return t=="y"?AS():(t=="o"?OR():OR()*2.2)}
-function gelir(){if(!k.me)return 0;var g=maas(k.mt);return k.me=="emekli"?g*0.5:g}
-function masraf(){if(k.yas<18)return 0;var m=AS()*0.7*(1+0.3*k.co);if(k.yas<23&&(anneV()||babaV()))m*=0.4;return m}
-function et(e){for(var a in e)k[a]=c(k[a]+e[a])}
-function cl(){return k.me&&k.me!="emekli"}
-function isTeklif(){var t=k.ed>=2?["z","o"]:(k.ed==1?["o","y"]:["y"]),l=[];
- for(var i=0;i<3;i++){(function(tt){var m=sc(IS[tt]);l.push([m+" · "+para(maas(tt)/12)+"/ay",function(){k.me=m;k.mt=tt;bil(m+" olarak işe başladın.","💼")}])})(sc(t))}
- l.push(["Şimdilik çalışma",function(){}]);soru("İş teklifleri geldi. Hangisini seçersin?",l,"💼")}
-function sinav(){if(Math.random()*100<k.ze-(k.s=="y"?15:0))soru("Üniversiteyi kazandın!\nYıllık masraf: "+para(AS()*0.15),[["🎓 Üniversiteye başla",function(){k.ok=2;k.un=k.yas;et({mu:8})}],["Gitme, çalış",isTeklif]],"🎉");
- else soru("Üniversite sınavını kazanamadın.",[["Seneye tekrar dene",function(){k.tk=k.yas+1}],["Çalışmaya başla",isTeklif]],"📝")}
-function ask(){var yer=cl()?"İş yerinde":(k.ok?"Okulda":"Mahallende");
- soru(yer+" biri dikkatini çekiyor. Ne yaparsın?",[["Yanına gidip konuş",function(){
-  if(Math.random()<.6)soru("Sohbetiniz çok güzel geçti, ondan hoşlanıyorsun.",[["Duygularını açıkla",function(){
-   if(Math.random()<.45+(k.mu-50)/200){k.sv=1;bil("O da senden hoşlanıyormuş, sevgili oldunuz!","💕");et({mu:10})}else{bil("Seni sadece arkadaş olarak görüyormuş.","💔");et({mu:-8})}}],
-   ["Arkadaş olarak kal",function(){et({ar:5})}]],"😊");
-  else{bil("Konuştunuz ama pek anlaşamadınız.","😐");et({mu:-2})}}],["Uzaktan bak, konuşma",function(){et({mu:-2})}]],"👀")}
-var E=[
-[1,6,0,function(){bil("Ateşin günlerce düşmedi, ailen seni doktora götürdü.","🤒");et({sa:-6})}],
-[6,13,function(){return k.ok},function(){soru("Okulda büyük bir çocuk harçlığını alıyor. Ne yaparsın?",[["Öğretmene anlat",function(){et({mu:-2})}],["Sessiz kal",function(){et({mu:-10})}],["Karşılık ver",function(){et({sa:-5,mu:3})}]],"😠")}],
-[7,17,function(){return k.ok},function(){soru("Sınav haftası geldi. Ne yaparsın?",[["Çok çalış",function(){et({ze:5,mu:-2})}],["Arkadaşlarla takıl",function(){et({ar:5,ze:-3})}],["Dengeli git",function(){et({ze:2,ar:2})}]],"📚")}],
-[10,17,function(){return !k.gr},function(){soru("Okulda iki grup var: biri sakin ve derslere önem veriyor, diğeri eğlenceli ama başı beladan kurtulmuyor.",[["Sakin gruba katıl",function(){k.gr="s";et({ar:4})}],["Eğlenceli gruba katıl",function(){k.gr="e";et({ar:6,mu:3})}],["Kimseye katılma",function(){k.gr="y";et({ar:-5})}]],"👥")}],
-[11,18,function(){return k.gr=="e"},function(){soru("Grubun yarın okulu kırıp çarşıya gitmek istiyor. Gelecek misin?",[["Gel",function(){k.ek++;et({ar:4,ze:-4,mu:3})}],["Gelme",function(){et({ar:-5})}]],"🏃")}],
-[11,18,function(){return k.gr=="e"&&k.ek>=2},function(){k.ek=0;soru("Okul devamsızlığını ailene bildirdi. Ailen çok kızgın.",[["Özür dile, söz ver",function(){et({mu:-4,ze:2})}],["Umursama",function(){et({mu:-2,ze:-5});bil("Ailenle aran bozuldu.","😞")}]],"😡")}],
-[13,18,function(){return k.gr=="e"},function(){soru("Grup bir gece partisine çağırıyor, içki de olacakmış.",[["Git",function(){et({mu:5,sa:-3,ar:4});k.risk+=1}],["Gitme",function(){et({ar:-4})}]],"🎉")}],
-[13,18,function(){return k.gr=="e"},function(){soru("Gruptan bir arkadaşın kavgaya karıştı, senden yardım istiyor.",[["Yardıma koş",function(){if(Math.random()<.5){bil("Kavgada yaralandın.","🤕");et({sa:-10,ar:6})}else{bil("Kavgayı ayırdın, herkes sana minnettar.","🤝");et({ar:8})}}],["Uzak dur",function(){et({ar:-8})}]],"👊")}],
-[11,18,function(){return k.gr=="s"},function(){soru("Arkadaşların bilim yarışmasına katılmayı öneriyor.",[["Katıl",function(){et({ze:4});if(Math.random()<.35){bil("Yarışmayı kazandınız!","🏆");et({mu:10})}else bil("Derece alamadınız ama çok şey öğrendin.","🔬")}],["Katılma",function(){}]],"🔬")}],
-[11,18,function(){return k.gr=="s"},function(){bil("Grubunla birlikte ders çalıştınız, notların yükseldi.","📈");et({ze:4,ar:2})}],
-[12,17,function(){return !k.sg},function(){soru("Arkadaşların sigara yakıyor. Biri paketi uzatıp 'Bir tane al, korkak olma' diyor.",[["Hayır de ve yürü",function(){et({ar:-4});k.sg=-1}],["Bir tane dene",function(){et({ar:3});k.risk+=1;if(Math.random()<.4){k.sg=1;bil("Sigaraya alıştın.","🚬")}}],["Onlarla içmeye başla",function(){et({ar:6});k.sg=1;k.risk+=2}]],"🚬")}],
-[13,25,function(){return k.sg==1&&!k.so},function(){k.so=1;soru("Ailen sigara içtiğini öğrendi.",[["Doğruyu söyle",function(){et({mu:-3})}],["İnkar et",function(){et({mu:-6})}]],"😳")}],
-[18,80,function(){return k.sg==1},function(){soru("Sigara her yıl hem sağlığını hem cebini yakıyor. Bırakmayı denemek ister misin?",[["Bırakmayı dene",function(){if(Math.random()<.4){k.sg=-1;bil("Sigarayı bıraktın!","💪");et({mu:6})}else{bil("Bırakamadın, yeniden başladın.","😩");et({mu:-4})}}],["Devam et",function(){k.risk+=1}]],"🚭")}],
-[14,45,function(){return !k.sv&&!k.es},ask],
-[14,17,function(){return k.sv},function(){k.sv=0;bil("Sevgilinle ayrıldınız, kalbin kırık.","💔");et({mu:-10})}],
-[18,45,function(){return k.sv&&!k.es},function(){soru("Sevgilinle uzun zamandır birliktesiniz.",[["💍 Evlilik teklif et",function(){ode("Düğün masrafı gerekiyor.",OR()*0.5,function(){k.es=1;k.sv=0;bil("Evlendin!","💒");et({mu:12})},function(){yz("Düğünü erteledin.")},"Ertele")}],["Biraz daha bekle",function(){}],["Ayrıl",function(){k.sv=0;et({mu:-8})}]],"💑")}],
-[22,45,function(){return k.es},function(){soru("Eşinle çocuk sahibi olmayı konuşuyorsunuz.\nBir çocuğun yıllık masrafı yaklaşık "+para(AS()*0.2),[["Çocuk sahibi olalım",function(){k.co++;bil("Bir çocuğun oldu!","👶");et({mu:12})}],["Şimdilik değil",function(){}]],"🍼")}],
-[20,90,function(){return k.es},function(){bil("Eşinle büyük bir tartışma yaşadınız.","😤");et({mu:-6})}],
-[16,25,0,function(){soru("Bir tanıdığın kolay para yolu öneriyor ama iş yasa dışı.",[["Reddet",function(){}],["Kabul et",function(){k.pa+=OR()*0.3;et({mu:-5});if(Math.random()<.35){bil("Yakalandın, büyük ceza ödedin.","🚔");k.pa-=OR()*0.6}}]],"🤫")}],
-[20,64,cl,function(){bil("Şirket küçüldü, işten çıkarıldın.","📦");k.me="";et({mu:-10})}],
-[25,64,cl,function(){soru("Patronun daha yüksek ama yorucu bir pozisyon teklif ediyor.",[["Kabul et",function(){k.mt=k.mt=="y"?"o":"z";bil("Terfi aldın, maaşın arttı.","📈");et({sa:-3})}],["Reddet",function(){}]],"🧑‍💼")}],
-[18,90,0,function(){ode("Doktor ciddi bir sorun buldu, tedavi gerekiyor.",OR()*0.25,function(){et({sa:8});bil("Tedavi oldun.","🏥")},function(){et({sa:-15});bil("Tedavi olmadın, sağlığın kötüleşti.","🤒")},"Tedavi olma")}],
-[45,99,0,function(){bil("Bel ve eklem ağrıların arttı.","🦴");et({sa:-5})}],
-[0,99,0,function(){bil("Ülkende ekonomik kriz çıktı, fiyatlar arttı.","📉");k.pa*=0.85;et({mu:-5})}],
-[0,99,function(){return Math.random()<.3},function(){bil("Bölgende deprem oldu, evin hasar gördü.","🏚️");k.pa*=0.8;et({sa:-6,mu:-10})}],
-[0,99,function(){return Math.random()<.15},function(){bil("Ülkende çatışmalar başladı.","⚠️");k.pa*=0.75;et({sa:-8,mu:-15})}],
-[0,99,function(){return Math.random()<.3},function(){bil("Salgın hastalık yayıldı.","🦠");et({sa:-7})}],
-[5,99,0,function(){bil("Yeni bir arkadaş edindin.","🤗");et({ar:10,mu:4})}],
-[5,99,0,function(){bil("Yakın arkadaşınla küstün.","😒");et({ar:-10,mu:-5})}]];
-function omur(u){if(Math.random()<(u[2]<65?.06:.006))return r(0,4);return Math.max(5,u[2]+r(-18,10))}
-function dgOlustur(){k.dg=[];for(var i=0;i<4;i++){var u=ag(U);k.dg.push({u:u[0],cn:Math.random()<.51?"Erkek":"Kız",ol:omur(u),y:u[3],h:"Doğdu",olu:0})}}
-function dgYil(){k.dg.forEach(function(d){if(d.olu)return;var a=k.yas;
- if(a>=d.ol){d.olu=1;d.h=a+" yaşında vefat etti";return}
- if(a==6)d.h=Math.random()*100<d.y*0.5?"Okula gidemedi":"Okula başladı";
- if(a==15&&Math.random()*100<d.y*0.7)d.h="Çalışmaya başladı";
- if(a==19)d.h=Math.random()*100<60-d.y*0.6?"Üniversiteye girdi":"Çalışıyor";
- if(a==27&&Math.random()<.6)d.h="Evlendi";
- if(a==31&&Math.random()<.5)d.h="Çocuğu oldu";
- if(a==60)d.h="Yaşlanıyor"})}
-function dgCiz(){var s="";k.dg.forEach(function(d){var a=k.yas,ic=d.olu?"🕯️":a<3?"👶":a<13?(d.cn=="Kız"?"👧":"👦"):a<60?(d.cn=="Kız"?"👩":"👨"):(d.cn=="Kız"?"👵":"👴");
- s+='<div class="bebek"><div style="font-size:24px">'+ic+'</div><b>'+d.u+'</b><br>'+d.h+'</div>'});$("dig").innerHTML=s}
-</script>
-<script>
-function yz(t){k.g.unshift("Yaş "+k.yas+": "+t);$("gn").innerText=k.g.join("\n")}
-function kd(){if(k)localStorage.setItem("hy6",JSON.stringify([k,hz,ge,YIL]))}
-function br(ad,v,renk){return ad+': <b>'+tn(v)+'</b><div class="bar"><i style="width:'+v+'%;background:'+renk+'"></i></div>'}
-function dog(){clearInterval(tm);k=null;q=[];bk=0;du=false;goster("oyun");
- ["bi","du","gn","ho","ko","dig","karakter"].forEach(function(x){$(x).innerHTML=""});$("olay").style.display="none";$("yasK").innerText="";
- var u=ag(U),n=0;
- (function d(){n++;if(n<32){$("ek").innerText=sc(U)[0];setTimeout(d,50+n*n*.4)}else ol(u)})()}
-function ol(u){var z=Math.random()*100,s=z<u[3]?"y":(z<100-u[3]/4?"o":"z"),b={y:45,o:60,z:75}[s],kr=Math.random()<(s=="y"?.5:.2);
- var dn=u[5].split(",").map(function(x){x=x.split(":");return[x[0],+x[1]]});
- k={u:u[0],o:u[2],s:s,yer:kr?"kırsal bir köy":sc(u[4].split(",")),din:ag(dn)[0],cn:Math.random()<.51?"Erkek":"Kız",
-  an:sc(IS[s]),ba:sc(IS[s]),ev:Math.random()<{y:.3,o:.6,z:.95}[s]?"Kendi evleri":"Kirada",kar:r(0,u[3]>50?5:2),
-  ay:r(18,38),yas:0,sa:c(b+r(-20,15)),ze:c(60+r(-30,20)),mu:c(55+r(-30,20)),ar:30,pa:0,kr:0,ab:0,yt:0,
-  sv:0,es:0,co:0,ok:0,ed:0,me:"",mt:"",hb:"",bu:0,tk:0,un:0,risk:0,ai:0,vk:0,gr:"",ek:0,sg:0,so:0,g:[],olu:0,
-  sk:sc(SK),hc:sc(HC),esk:sc(SK),gc:$("gercek").value};
- k.by=k.ay+r(0,8);k.ao=k.ay+u[2]+r(-15,8);k.bo=k.by+u[2]-4+r(-15,8);k.ol=u[2]+Math.round((k.sa-50)/4)+r(-15,8);if(k.ol<20)k.ol=r(20,40);
- dgOlustur();ge=0;
- yz("Bu ülkede asgari ücret ayda "+para(u[8])+", ortalama maaş "+para(u[9])+".");
- bil((k.cn=="Erkek"?"Bir erkek":"Bir kız")+" bebek olarak "+k.u+", "+k.yer+" doğdun.\nAnnen "+k.an+", baban "+k.ba+". "+k.ev+(k.kar?", "+k.kar+" kardeşin var.":", kardeşin yok."),"👶");
- kd();bas()}
-function ci(){if(!k)return;
- $("ek").innerText=k.u+" · "+k.yer;
- $("bi").innerText=k.cn+" · "+k.din+" · "+{y:"Yoksul",o:"Orta halli",z:"Zengin"}[k.s]+" aile";
- $("yasK").innerText=k.yas+" yaş";$("ilr").style.width=Math.min(100,ge/YIL*100)+"%";
- var s=br("❤️ Sağlık",k.sa,"#2ecc71")+br("🧠 Zeka",k.ze,"#3498db")+br("😊 Mutluluk",k.mu,"#f1c40f")+br("🤝 Arkadaşlık",k.ar,"#9b59b6");
- s+='<div class="k">💵 Birikim: '+para(k.pa)+(gelir()?'<br>💼 '+k.me+' · Aylık maaş: '+para(gelir()/12):"")+(masraf()?'<br>🧾 Aylık yaşam masrafı: '+para(masraf()/12):"")+(k.yt>0?'<br>📈 Yatırım: '+para(k.yt):"")+(k.kr>0?'<br>🏦 Kredi borcu: '+para(k.kr):"")+(k.ab>0?'<br>👪 Aile borcu: '+para(k.ab):"");
- s+='<br>👩 Anne: '+k.an+(anneV()?"":" (vefat)")+' · 👨 Baba: '+k.ba+(babaV()?"":" (vefat)")+(k.sv?'<br>💕 Sevgilin var':"")+(k.es?'<br>💍 Evli':"")+(k.co?' · Çocuk: '+k.co:"")+'</div>';
- $("du").innerHTML=s;cizim()}
-function hzb(){var d=$("ko");d.innerHTML="";
- var l=[[du?"▶ Devam":"⏸ Durdur",function(){du=!du;hzb()},du]];[1,2,3,4,10].forEach(function(h){l.push([h+"x",function(){hz=h;hzb();kd()},hz==h])});
- l.forEach(function(b){var e=document.createElement("button");e.innerText=b[0];e.onclick=b[1];if(b[2])e.className="s";d.appendChild(e)})}
-function hob(){var d=$("ho");d.innerHTML="";if(k.yas<6){d.style.display="none";return}d.style.display="block";
- var t=document.createElement("div");t.innerHTML="<b>Hobin</b>";d.appendChild(t);
- Object.keys(HB).forEach(function(h){if(h=="Ek iş"&&k.yas<15)return;var e=document.createElement("button");e.innerText=h;if(k.hb==h)e.className="s";e.onclick=function(){k.hb=k.hb==h?"":h;hob();kd()};d.appendChild(e)})}
-function yil(){k.yas++;ge=0;k.ai=0;k.vk=0;if(!bk)$("olay").style.display="none";
- var g=gelir();if(k.bu==1&&k.ok)g+=AS()*0.15;
- k.pa+=g-masraf();if(k.ok==2&&k.bu!=1)k.pa-=AS()*0.15;
- if(k.sg==1&&k.yas>=15){k.pa-=AS()*0.05;k.risk+=0.5}
- if(k.hb){et(HB[k.hb]);if(k.hb=="Ek iş")k.pa+=AS()*0.15}
- if(k.kr>0)k.kr*=1.3;if(k.yt>0)k.yt*=1+Math.random()*0.35-0.15;
- if(k.pa<0&&k.yas>=18){k.kr-=k.pa;k.pa=0;yz("Paran yetmedi, bankaya borçlandın.")}else if(k.pa<0)k.pa=0;
- if(k.kr>OR())et({mu:-5});if(k.yas>50)et({sa:-r(1,3)});
- if(k.risk>0&&k.yas>=30&&Math.random()<k.risk*.02){k.risk=0;k.ol-=5;q.push(function(){bil("Gençlikteki kötü alışkanlıkların yüzünden akciğerinde ciddi bir hastalık çıktı.","🫁");ode("Akciğer tedavisi gerekiyor.",OR()*0.5,function(){et({sa:5})},function(){et({sa:-20});k.ol-=5},"Tedavi olma")})}
- if(k.yas==6)q.push(function(){if(k.yer=="kırsal bir köy"&&k.s=="y"&&Math.random()<.4){bil("Köyünde okul yok, okula gidemedin.","🏚️");return}soru("6 yaşına geldin, okul zamanı.",[["🎒 Okula başla",function(){k.ok=1}],["Evde kal, ailene yardım et",function(){et({ze:-5})}]],"🏫")});
- if(k.yas==14&&k.ok==1)q.push(function(){soru("Ortaokulu bitirdin. Ne yapmak istersin?",[["Liseye devam et",function(){}],["Okulu bırak, çalış",function(){k.ok=0;isTeklif()}]],"🎒")});
- if(k.yas==18&&k.ok==1)q.push(function(){k.ed=1;k.ok=0;soru("Liseyi bitirdin!",[["📝 Üniversite sınavına gir",sinav],["Çalışma hayatına atıl",isTeklif]],"🎓")});
- if(k.tk&&k.tk==k.yas)q.push(function(){k.tk=0;sinav()});
- if(k.ok==2&&k.yas==k.un+4)q.push(function(){k.ok=0;k.ed=2;bil("Üniversiteden mezun oldun!","🎓");isTeklif()});
- if(!k.me&&!k.ok&&!k.tk&&k.yas>18&&k.yas<60&&Math.random()<.35)q.push(function(){soru("Şu an bir işin yok ve masrafların birikiyor.",[["İş ara",isTeklif],["Şimdilik arama",function(){}]],"🔎")});
- if(k.yas==65&&cl())q.push(function(){soru("65 yaşına geldin.",[["🏖️ Emekli ol",function(){k.me="emekli"}],["Çalışmaya devam et",function(){}]],"🎂")});
- if(k.ay+k.yas==k.ao){q.push(function(){bil("Annen vefat etti.","🕯️")});et({mu:-20})}
- if(k.by+k.yas==k.bo){q.push(function(){bil("Baban vefat etti.","🕯️")});et({mu:-20})}
- if(k.kar&&Math.random()<.12)yz(sc(["Kardeşin evlendi.","Kardeşin iş buldu.","Kardeşin taşındı.","Kardeşinin çocuğu oldu."]));
- if(k.yas<25&&k.sa<10)k.sa=10;
- dgYil();dgCiz();hob();if(ok())return;
- if(Math.random()<.65){var u=E.filter(function(e){return k.yas>=e[0]&&k.yas<=e[1]&&(!e[2]||e[2]())});if(u.length)q.push(sc(u)[3])}
- ci();kd()}
-function mk(t,f){return[t,function(){ma=0;$("mn").style.display="none";f();ci();kd()}]}
-function mnA(){if(!k||k.olu||bk)return;ma=!ma;$("mn").style.display=ma?"block":"none";if(ma)mnC()}
-function mnC(){var l=[],d=$("mn");d.innerHTML="";
- if(k.yas>=10)l.push(mk("🏋️ Sağlığına yatırım yap",function(){ode("Spor salonu ve check-up.",AS()*0.1,function(){et({sa:8});bil("Sağlığına yatırım yaptın.","🏋️")},function(){})}));
- if(k.yas>=8)l.push(mk("📖 Kendine yatırım yap (kurs, kitap)",function(){ode("Kişisel gelişim kursu.",AS()*0.08,function(){et({ze:6});bil("Kendine yatırım yaptın.","📖")},function(){})}));
- if(k.yas>=18&&k.pa>0)l.push(mk("📈 Birikiminin yarısını yatırıma koy",function(){var x=k.pa/2;k.pa-=x;k.yt+=x;bil("Yatırım yaptın: "+para(x),"📈")}));
- if(k.yt>0)l.push(mk("💵 Yatırımını nakite çevir",function(){k.pa+=k.yt;bil("Yatırımını çektin: "+para(k.yt),"💵");k.yt=0}));
- if(k.pa>0)l.push(mk("🤲 Bağış / zekat ver (birikimin %10'u)",function(){var x=k.pa*0.1;k.pa-=x;et({mu:6});bil("İhtiyaç sahiplerine "+para(x)+" verdin.","🤲")}));
- if(k.ok&&!k.bu)l.push(mk("🎓 Burs başvurusu yap",function(){k.bu=Math.random()*100<k.ze-10?1:-1;bil(k.bu>0?"Burs kazandın!":"Burs başvurun reddedildi.",k.bu>0?"🎉":"😞")}));
- if(k.yas>=14&&k.ok!=2)l.push(mk(cl()?"🔄 İş değiştir":"🔎 İş ara",isTeklif));
- if(cl())l.push(mk("🚪 İşten ayrıl",function(){bil(k.me+" işinden ayrıldın.","🚪");k.me=""}));
- if(k.yas>=14&&!k.sv&&!k.es)l.push(mk("💬 Biriyle tanışmaya çalış",ask));
- if(k.sv&&k.yas>=18)l.push(mk("💍 Sevgiline evlilik teklif et",function(){ode("Düğün masrafı.",OR()*0.5,function(){k.es=1;k.sv=0;bil("Evlendin!","💒");et({mu:12})},function(){})}));
- if(k.kr>0&&k.pa>0)l.push(mk("🏦 Kredi borcunu öde",function(){var x=Math.min(k.pa,k.kr);k.pa-=x;k.kr-=x;bil("Krediye "+para(x)+" ödedin.","🏦")}));
- if(k.ab>0&&k.pa>0)l.push(mk("👪 Aile borcunu öde",function(){var x=Math.min(k.pa,k.ab);k.pa-=x;k.ab-=x;et({mu:2})}));
- if(!k.vk)l.push(mk(k.yas<18?"👪 Ailenle vakit geçir":"🍽️ Sevdiklerinle dışarı çık",function(){k.vk=1;
-  if(k.yas<18){et({mu:4,ar:2});bil("Ailenle güzel vakit geçirdin.","👪")}
-  else ode("Yemek ve gezme masrafı.",OR()*0.03,function(){et({mu:5,ar:3});bil("Sevdiklerinle güzel vakit geçirdin.","🍽️")},function(){k.vk=0})}));
- l.push(["✖ Kapat",function(){ma=0;d.style.display="none"}]);
- l.forEach(function(b){var e=document.createElement("button");e.innerText=b[0];e.onclick=b[1];d.appendChild(e)})}
-function ok(){if(k.olu)return 1;if(k.yas>=k.ol||(k.sa<=0&&k.yas>=25)){k.olu=1;yz("Vefat ettin.");bit();return 1}return 0}
-function bit(){clearInterval(tm);var f=k.yas-k.o,d=$("olay");d.style.display="block";
- var s='<div class="ikon">🕯️</div><div class="metin"><b>'+k.yas+' yaşında vefat ettin.</b>\n\n'+k.u+' ortalaması '+k.o+' yıl. Sen ortalamadan '+(f>=0?f+' yıl fazla':-f+' yıl az')+' yaşadın.\nGeride kalan: '+para(k.pa+k.yt-k.kr-k.ab);
- if(k.gc&&ub(k.gc)){var g=ub(k.gc);s+='\n\nGerçekte doğduğun yer '+g[0]+'. Orada ortalama ömür '+g[2]+' yıl, ortalama maaş ayda yaklaşık '+Math.round(g[9]*TL).toLocaleString("tr")+' TL.'}
- var y=k.dg.filter(function(x){return !x.olu}).length;
- s+='\n\nSeninle aynı saniyede doğan 4 bebekten '+y+' tanesi hâlâ hayatta.\n\nHer gün milyonlarca insan çok farklı şartlarda doğuyor. Hayatının kıymetini bil.</div>';
- d.innerHTML=s;var b=document.createElement("button");b.innerText="🔄 Yeniden doğ";b.style.textAlign="center";
- b.onclick=function(){localStorage.removeItem("hy6");$("devamK").innerHTML="";goster("ana")};d.appendChild(b);
- $("ho").style.display="none";$("ko").innerHTML="";kd()}
-function bas(){ci();$("gn").innerText=k.g.join("\n");hob();dgCiz();bk=0;q=[];if(k.olu)return bit();hzb();clearInterval(tm);
- tm=setInterval(function(){if(du||bk||ma||k.olu)return;if(q.length){q.shift()();ci();return}ge+=.25*hz;if(ge>=YIL)yil();else{$("ilr").style.width=Math.min(100,ge/YIL*100)+"%"}},250)}
-var v=JSON.parse(localStorage.getItem("hy6")||"0");
-function devam(){k=v[0];hz=v[1];ge=v[2];YIL=v[3]||40;goster("oyun");bas()}
-if(v&&v[0]&&!v[0].olu)$("devamK").innerHTML='<button class="btn" style="font-size:16px;padding:10px 24px;background:#2a2a3a;color:#fff;box-shadow:none" onclick="devam()">Kaldığın hayata devam et</button>';
-introBasla();
-</script>
+</body>
+</html>
+
